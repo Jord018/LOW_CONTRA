@@ -25,15 +25,38 @@ public class GameController {
 
         Player player = model.getPlayer();
 
-        if (activeKeys.contains(KeyCode.LEFT)) {
+        boolean up = activeKeys.contains(KeyCode.W);
+        boolean down = activeKeys.contains(KeyCode.S);
+        boolean left = activeKeys.contains(KeyCode.A);
+        boolean right = activeKeys.contains(KeyCode.D);
+
+        if (left) {
             player.moveLeft();
-        } else if (activeKeys.contains(KeyCode.RIGHT)) {
+        } else if (right) {
             player.moveRight();
         } else {
             player.stop();
         }
 
-        if (activeKeys.contains(KeyCode.SPACE)) {
+        if (up && !left && !right) {
+            player.setAimAngle(90);
+        } else if (up && right) {
+            player.setAimAngle(45);
+        } else if (right && !up && !down) {
+            player.setAimAngle(0);
+        } else if (right && down) {
+            player.setAimAngle(315);
+        } else if (down && !left && !right) {
+            player.setAimAngle(270);
+        } else if (down && left) {
+            player.setAimAngle(225);
+        } else if (left && !up && !down) {
+            player.setAimAngle(180);
+        } else if (left && up) {
+            player.setAimAngle(135);
+        }
+
+        if (activeKeys.contains(KeyCode.K)) {
             player.jump();
         }
 
@@ -43,7 +66,7 @@ public class GameController {
             }
         }
 
-        if (activeKeys.contains(KeyCode.DOWN)) {
+        if (down) {
             player.setPressingDown(true);
         } else {
             player.setPressingDown(false);

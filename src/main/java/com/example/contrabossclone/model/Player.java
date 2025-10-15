@@ -30,6 +30,7 @@ public class Player {
     private double gravity = 0.5;
     private boolean onGround = false;
     private boolean isPressingDown = false;
+    private double aimAngle = 90.0;
 
     private int health = 100;
     private int fireRate = 30; // Lower is faster
@@ -138,27 +139,41 @@ public class Player {
     public List<Bullet> shoot() {
         fireCooldown = fireRate;
         List<Bullet> bullets = new ArrayList<>();
+        double bulletSpeed = 10;
+        double velocityX = Math.cos(Math.toRadians(aimAngle)) * bulletSpeed;
+        double velocityY = -Math.sin(Math.toRadians(aimAngle)) * bulletSpeed;
+
         switch (weaponType) {
             case NORMAL:
-                bullets.add(new Bullet(x + width / 2 - 2.5, y, 0, -10, Color.YELLOW));
+                bullets.add(new Bullet(x + width / 2 - 2.5, y, velocityX, velocityY, Color.YELLOW));
                 break;
             case MACHINE_GUN:
-                bullets.add(new Bullet(x + width / 2 - 2.5, y, 0, -10, Color.YELLOW));
+                bullets.add(new Bullet(x + width / 2 - 2.5, y, velocityX, velocityY, Color.YELLOW));
                 break;
             case SPREAD_GUN:
-                bullets.add(new Bullet(x + width / 2 - 2.5, y, -2, -10, Color.YELLOW));
-                bullets.add(new Bullet(x + width / 2 - 2.5, y, 0, -10, Color.YELLOW));
-                bullets.add(new Bullet(x + width / 2 - 2.5, y, 2, -10, Color.YELLOW));
+                double angle1 = aimAngle - 15;
+                double angle2 = aimAngle + 15;
+                double velocityX1 = Math.cos(Math.toRadians(angle1)) * bulletSpeed;
+                double velocityY1 = -Math.sin(Math.toRadians(angle1)) * bulletSpeed;
+                double velocityX2 = Math.cos(Math.toRadians(angle2)) * bulletSpeed;
+                double velocityY2 = -Math.sin(Math.toRadians(angle2)) * bulletSpeed;
+                bullets.add(new Bullet(x + width / 2 - 2.5, y, velocityX1, velocityY1, Color.YELLOW));
+                bullets.add(new Bullet(x + width / 2 - 2.5, y, velocityX, velocityY, Color.YELLOW));
+                bullets.add(new Bullet(x + width / 2 - 2.5, y, velocityX2, velocityY2, Color.YELLOW));
                 break;
             case LASER:
                 // For now, laser will be a fast, long bullet
-                bullets.add(new Bullet(x + width / 2 - 1, y, 0, -20, Color.RED, 2, 100));
+                bullets.add(new Bullet(x + width / 2 - 1, y, velocityX * 2, velocityY * 2, Color.RED, 2, 100));
                 break;
             case FIRE:
-                bullets.add(new Bullet(x + width / 2 - 5, y, 0, -8, Color.ORANGE, 10, 10));
+                bullets.add(new Bullet(x + width / 2 - 5, y, velocityX, velocityY, Color.ORANGE, 10, 10));
                 break;
         }
         return bullets;
+    }
+
+    public void setAimAngle(double aimAngle) {
+        this.aimAngle = aimAngle;
     }
 
     public void setWeaponType(WeaponType weaponType) {

@@ -24,11 +24,6 @@ public class Boss {
     }
 
     public void update() {
-        x += speed;
-        if (x < 0 || x > 800 - width) {
-            speed = -speed;
-        }
-
         if (shootCooldown <= 0) {
             shootCooldown = 60; // Shoot every 60 frames
             aimingShot = !aimingShot; // Alternate between straight and aimed shots

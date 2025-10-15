@@ -31,9 +31,9 @@ public class GameModel {
         level1PowerUps.add(new PowerUp(400, 300, PowerUp.PowerUpType.LASER));
         level1PowerUps.add(new PowerUp(500, 300, PowerUp.PowerUpType.FIRE));
         List<Boss> level1Bosses = new ArrayList<>();
-        level1Bosses.add(new Boss(400 - 50, 50, player));
-        level1Bosses.add(new Boss(200 - 50, 50, player));
-        level1Bosses.add(new Boss(600 - 50, 50, player));
+        level1Bosses.add(new Boss(800 - 120, 600 - 120, player));
+        level1Bosses.add(new Boss(800 - 240, 600 - 120, player));
+        level1Bosses.add(new Boss(800 - 360, 600 - 120, player));
         levels.add(new Level(level1Bosses, level1Platforms, level1PowerUps, "/level1_bg.jpg"));
 
         // Level 2
@@ -43,7 +43,7 @@ public class GameModel {
         level2Platforms.add(new Platform(350, 600 - 200, 100, 20));
         List<PowerUp> level2PowerUps = new ArrayList<>();
         List<Boss> level2Bosses = new ArrayList<>();
-        level2Bosses.add(new SecondBoss(400 - 50, 50, player));
+        level2Bosses.add(new SecondBoss(800 - 120, 600 - 120, player));
         levels.add(new Level(level2Bosses, level2Platforms, level2PowerUps, "/level2_bg.png"));
     }
 
