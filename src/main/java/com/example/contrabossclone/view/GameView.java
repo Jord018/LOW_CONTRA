@@ -9,18 +9,25 @@ import com.example.contrabossclone.model.Bullet;
 public class GameView {
 
     private GameModel model;
+    private double width;
+    private double height;
 
-    public GameView(GameModel model) {
+    public GameView(GameModel model, double width, double height) {
         this.model = model;
+        this.width = width;
+        this.height = height;
     }
 
     public void render(GraphicsContext gc) {
         Level currentLevel = model.getLevels().get(model.getCurrentLevelIndex());
         currentLevel.render(gc);
 
+        gc.setFill(Color.WHITE);
+        gc.fillText("Lives: " + model.getPlayer().getLives(), 10, 20);
+
         if (model.isGameOver()) {
             gc.setFill(Color.WHITE);
-            gc.fillText(model.getGameOverMessage(), 400 - 50, 300);
+            gc.fillText(model.getGameOverMessage(), width / 2 - 50, height / 2);
         } else {
             model.getPlayer().render(gc);
 
@@ -32,5 +39,10 @@ public class GameView {
                 bullet.render(gc);
             }
         }
+    }
+
+    public void resize(double newWidth, double newHeight) {
+        this.width = newWidth;
+        this.height = newHeight;
     }
 }

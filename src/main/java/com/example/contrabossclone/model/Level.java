@@ -27,10 +27,10 @@ public class Level {
 
     public void render(GraphicsContext gc) {
         if (backgroundImage != null) {
-            gc.drawImage(backgroundImage, 0, 0, 800, 600);
+            gc.drawImage(backgroundImage, 0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
         } else {
             gc.setFill(Color.BLACK);
-            gc.fillRect(0, 0, 800, 600);
+            gc.fillRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
         }
 
         for (Boss boss : bosses) {

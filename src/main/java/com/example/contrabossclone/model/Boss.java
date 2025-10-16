@@ -6,6 +6,9 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Boss {
 
@@ -15,45 +18,27 @@ public class Boss {
     private double speed = 2;
     private int shootCooldown = 0;
     private Player player;
-    private boolean aimingShot = false;
+    private ShootingStrategy shootingStrategy;
 
-    public Boss(double x, double y, Player player) {
+    public Boss(double x, double y, Player player, ShootingStrategy shootingStrategy) {
         this.x = x;
         this.y = y;
         this.player = player;
+        this.shootingStrategy = shootingStrategy;
     }
 
     public void update() {
-        if (shootCooldown <= 0) {
-            shootCooldown = 60; // Shoot every 60 frames
-            aimingShot = !aimingShot; // Alternate between straight and aimed shots
-        } else {
+        if (shootCooldown > 0) {
             shootCooldown--;
         }
     }
 
-    public Bullet shoot() {
-        if (shootCooldown == 1) { // To shoot when cooldown is 1, not 0
-            if (aimingShot) {
-                double playerX = player.getX() + player.getWidth() / 2;
-                double playerY = player.getY() + player.getHeight() / 2;
-                double bossCenterX = x + width / 2;
-                double bossCenterY = y + height;
-
-                double deltaX = playerX - bossCenterX;
-                double deltaY = playerY - bossCenterY;
-                double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-
-                double bulletSpeed = 5;
-                double velocityX = (deltaX / distance) * bulletSpeed;
-                double velocityY = (deltaY / distance) * bulletSpeed;
-
-                return new Bullet(bossCenterX - 2.5, bossCenterY, velocityX, velocityY, Color.RED);
-            } else {
-                return new Bullet(x + width / 2 - 2.5, y + height, 0, 5, Color.RED);
-            }
+    public List<Bullet> shoot() {
+        if (shootCooldown <= 0) {
+            shootCooldown = 60; // Shoot every 60 frames
+            return shootingStrategy.shoot(x + width / 2, y + height / 2, player);
         }
-        return null;
+        return new ArrayList<>();
     }
 
     public void render(GraphicsContext gc) {

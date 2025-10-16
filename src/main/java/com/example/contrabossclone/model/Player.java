@@ -32,15 +32,20 @@ public class Player {
     private boolean isPressingDown = false;
     private double aimAngle = 90.0;
 
-    private int health = 100;
+    private int maxHealth = 100;
+    private int health = maxHealth;
+    private int lives = 3;
     private int fireRate = 30; // Lower is faster
     private int fireCooldown = 0;
     private boolean isInvincible = false;
     private int invincibilityTimer = 0;
+    private double respawnX, respawnY;
 
     public Player(double x, double y) {
         this.x = x;
         this.y = y;
+        this.respawnX = x;
+        this.respawnY = y;
     }
 
     public void moveLeft() {
@@ -71,7 +76,12 @@ public class Player {
         isPressingDown = pressingDown;
     }
 
-    public void update(List<Platform> platforms) {
+    public void setRespawnPosition(double x, double y) {
+        this.respawnX = x;
+        this.respawnY = y;
+    }
+
+    public void update(List<Platform> platforms, double screenHeight) {
         x += dx;
 
         // Apply gravity
@@ -81,8 +91,8 @@ public class Player {
         onGround = false;
 
         // Check for ground collision (bottom of the screen)
-        if (y + height > 600) {
-            y = 600 - height;
+        if (y + height > screenHeight) {
+            y = screenHeight - height;
             velocityY = 0;
             onGround = true;
         }
@@ -136,7 +146,7 @@ public class Player {
         return fireCooldown <= 0;
     }
 
-    public List<Bullet> shoot() {
+    public List<Bullet> shoot(double screenWidth, double screenHeight) {
         fireCooldown = fireRate;
         List<Bullet> bullets = new ArrayList<>();
         double bulletSpeed = 10;
@@ -145,10 +155,10 @@ public class Player {
 
         switch (weaponType) {
             case NORMAL:
-                bullets.add(new Bullet(x + width / 2 - 2.5, y, velocityX, velocityY, Color.YELLOW));
+                bullets.add(new Bullet(x + width / 2 - 2.5, y, velocityX, velocityY, Color.YELLOW, screenWidth, screenHeight));
                 break;
             case MACHINE_GUN:
-                bullets.add(new Bullet(x + width / 2 - 2.5, y, velocityX, velocityY, Color.YELLOW));
+                bullets.add(new Bullet(x + width / 2 - 2.5, y, velocityX, velocityY, Color.YELLOW, screenWidth, screenHeight));
                 break;
             case SPREAD_GUN:
                 double angle1 = aimAngle - 15;
@@ -157,16 +167,16 @@ public class Player {
                 double velocityY1 = -Math.sin(Math.toRadians(angle1)) * bulletSpeed;
                 double velocityX2 = Math.cos(Math.toRadians(angle2)) * bulletSpeed;
                 double velocityY2 = -Math.sin(Math.toRadians(angle2)) * bulletSpeed;
-                bullets.add(new Bullet(x + width / 2 - 2.5, y, velocityX1, velocityY1, Color.YELLOW));
-                bullets.add(new Bullet(x + width / 2 - 2.5, y, velocityX, velocityY, Color.YELLOW));
-                bullets.add(new Bullet(x + width / 2 - 2.5, y, velocityX2, velocityY2, Color.YELLOW));
+                bullets.add(new Bullet(x + width / 2 - 2.5, y, velocityX1, velocityY1, Color.YELLOW, screenWidth, screenHeight));
+                bullets.add(new Bullet(x + width / 2 - 2.5, y, velocityX, velocityY, Color.YELLOW, screenWidth, screenHeight));
+                bullets.add(new Bullet(x + width / 2 - 2.5, y, velocityX2, velocityY2, Color.YELLOW, screenWidth, screenHeight));
                 break;
             case LASER:
                 // For now, laser will be a fast, long bullet
-                bullets.add(new Bullet(x + width / 2 - 1, y, velocityX * 2, velocityY * 2, Color.RED, 2, 100));
+                bullets.add(new Bullet(x + width / 2 - 1, y, velocityX * 2, velocityY * 2, Color.RED, 2, 100, screenWidth, screenHeight));
                 break;
             case FIRE:
-                bullets.add(new Bullet(x + width / 2 - 5, y, velocityX, velocityY, Color.ORANGE, 10, 10));
+                bullets.add(new Bullet(x + width / 2 - 5, y, velocityX, velocityY, Color.ORANGE, 10, 10, screenWidth, screenHeight));
                 break;
         }
         return bullets;
@@ -199,14 +209,31 @@ public class Player {
     public void hit() {
         if (!isInvincible) {
             health -= 20;
-            if (health < 0) {
-                health = 0;
+            if (health <= 0) {
+                lives--;
+                if (lives > 0) {
+                    respawn();
+                } else {
+                    health = 0;
+                }
             }
         }
     }
 
+    public void respawn() {
+        health = maxHealth;
+        x = respawnX;
+        y = respawnY;
+        isInvincible = true;
+        invincibilityTimer = 180; // 3 seconds of invincibility after respawning
+    }
+
     public boolean isDefeated() {
-        return health <= 0;
+        return lives <= 0;
+    }
+
+    public int getLives() {
+        return lives;
     }
 
     public double getX() {

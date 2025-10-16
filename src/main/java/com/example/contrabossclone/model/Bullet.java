@@ -11,16 +11,19 @@ public class Bullet {
     private double width = 5, height = 10;
     private double velocityX, velocityY;
     private Color color;
+    private double screenWidth, screenHeight;
 
-    public Bullet(double x, double y, double velocityX, double velocityY, Color color) {
+    public Bullet(double x, double y, double velocityX, double velocityY, Color color, double screenWidth, double screenHeight) {
         this.x = x;
         this.y = y;
         this.velocityX = velocityX;
         this.velocityY = velocityY;
         this.color = color;
+        this.screenWidth = screenWidth;
+        this.screenHeight = screenHeight;
     }
 
-    public Bullet(double x, double y, double velocityX, double velocityY, Color color, double width, double height) {
+    public Bullet(double x, double y, double velocityX, double velocityY, Color color, double width, double height, double screenWidth, double screenHeight) {
         this.x = x;
         this.y = y;
         this.velocityX = velocityX;
@@ -28,6 +31,8 @@ public class Bullet {
         this.color = color;
         this.width = width;
         this.height = height;
+        this.screenWidth = screenWidth;
+        this.screenHeight = screenHeight;
     }
 
     public void update() {
@@ -41,10 +46,6 @@ public class Bullet {
     }
 
     public boolean isOutOfBounds(double width, double height) {
-        return y < 0 || y > height;
-    }
-
-    public Rectangle2D getBounds() {
-        return new Rectangle2D(x, y, this.width, this.height);
+        return x < 0 || x > screenWidth || y < 0 || y > screenHeight;
     }
 }
