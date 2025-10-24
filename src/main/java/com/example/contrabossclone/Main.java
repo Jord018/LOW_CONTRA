@@ -1,3 +1,5 @@
+package com.example.contrabossclone;
+
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;

@@ -59,17 +59,9 @@ public class GameModel {
             boss.update();
         }
 
-        // Player shooting
-        if (player.canShoot()) {
-            List<Bullet> newPlayerBullets = player.shoot(width, height);
-            if (newPlayerBullets != null && !newPlayerBullets.isEmpty()) {
-                playerBullets.addAll(newPlayerBullets);
-            }
-        }
-
         // Boss shooting
         for (Boss boss : currentLevel.getBosses()) {
-            List<Bullet> newBossBullets = boss.shoot();
+            List<Bullet> newBossBullets = boss.shoot(width, height); // <--- เพิ่ม width, height
             if (newBossBullets != null && !newBossBullets.isEmpty()) {
                 bossBullets.addAll(newBossBullets);
             }

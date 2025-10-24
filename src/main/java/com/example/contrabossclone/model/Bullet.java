@@ -4,6 +4,8 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
+import java.util.BitSet;
+
 
 public class Bullet {
 
@@ -46,6 +48,29 @@ public class Bullet {
     }
 
     public boolean isOutOfBounds(double width, double height) {
-        return x < 0 || x > screenWidth || y < 0 || y > screenHeight;
+        // ควรใช้ width และ height ที่รับเข้ามา ไม่ใช่ screenWidth/screenHeight
+        return x < 0 || x > width || y < 0 || y > height;
+    }
+
+    public Rectangle2D getBounds() {
+        return new Rectangle2D(x, y, width, height);
+    }
+
+    // Getters
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    // Setters
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
     }
 }

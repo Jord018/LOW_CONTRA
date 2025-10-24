@@ -12,7 +12,7 @@ import java.util.List;
 
 public class Boss {
 
-    private double x, y;
+    protected double x, y;
     private double width = 100, height = 100;
     private int health = 100;
     private double speed = 2;
@@ -33,10 +33,10 @@ public class Boss {
         }
     }
 
-    public List<Bullet> shoot() {
+    public List<Bullet> shoot(double screenWidth, double screenHeight) { // <--- เพิ่มพารามิเตอร์
         if (shootCooldown <= 0) {
-            shootCooldown = 60; // Shoot every 60 frames
-            return shootingStrategy.shoot(x + width / 2, y + height / 2, player);
+            shootCooldown = 60;
+            return shootingStrategy.shoot(x + width / 2, y + height / 2, player, screenWidth, screenHeight); // <--- ส่งต่อ
         }
         return new ArrayList<>();
     }
@@ -72,14 +72,6 @@ public class Boss {
         return health <= 0;
     }
 
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
     public double getWidth() {
         return width;
     }
@@ -90,5 +82,21 @@ public class Boss {
 
     public int getHealth() {
         return health;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
     }
 }

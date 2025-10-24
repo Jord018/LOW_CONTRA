@@ -62,7 +62,8 @@ public class GameController {
 
         if (activeKeys.contains(KeyCode.J)) {
             if (player.canShoot()) {
-                model.getPlayerBullets().addAll(player.shoot());
+                // เพิ่ม model.getWidth() และ model.getHeight() เข้าไป
+                model.getPlayerBullets().addAll(player.shoot(model.getWidth(), model.getHeight()));
             }
         }
 
