@@ -3,8 +3,8 @@ package com.example.contrabossclone.view;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import com.example.contrabossclone.model.GameModel;
-import com.example.contrabossclone.model.Level;
-import com.example.contrabossclone.model.Bullet;
+import com.example.contrabossclone.model.Stage.Level;
+import com.example.contrabossclone.model.MachanicShoot.Bullet;
 
 public class GameView {
 

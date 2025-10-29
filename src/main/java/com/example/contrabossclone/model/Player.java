@@ -1,14 +1,13 @@
 package com.example.contrabossclone.model;
 
-import com.example.contrabossclone.model.Bullet;
-import com.example.contrabossclone.model.Platform;
+import com.example.contrabossclone.model.MachanicShoot.Bullet;
+import com.example.contrabossclone.model.Stage.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class Player {

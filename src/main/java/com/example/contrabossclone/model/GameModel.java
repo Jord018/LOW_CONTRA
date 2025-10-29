@@ -2,6 +2,17 @@ package com.example.contrabossclone.model;
 
 
 
+import com.example.contrabossclone.model.Boss.Boss;
+import com.example.contrabossclone.model.Boss.SecondBoss;
+import com.example.contrabossclone.model.Boss.ThirdBoss;
+import com.example.contrabossclone.model.Items.PowerUp;
+import com.example.contrabossclone.model.MachanicShoot.AimShoot;
+import com.example.contrabossclone.model.MachanicShoot.Bullet;
+import com.example.contrabossclone.model.MachanicShoot.DirectShoot;
+import com.example.contrabossclone.model.MachanicShoot.ProjectileShoot;
+import com.example.contrabossclone.model.Stage.Level;
+import com.example.contrabossclone.model.Stage.Platform;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,7 +90,8 @@ public class GameModel {
         List<Platform> platforms = new ArrayList<>();
         
         List<Boss> bosses = new ArrayList<>();
-        
+        bosses.add(new ThirdBoss(width - 120, height - 120, player, new ProjectileShoot()));
+
         levels.add(new Level(bosses, platforms, powerUps, "/level3_bg.png"));
     }
 
