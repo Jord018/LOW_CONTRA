@@ -33,7 +33,14 @@ public class Player {
     private double aimAngle = 90.0;
 
     private int maxHealth = 100;
+
+
     private int health = maxHealth;
+
+    public void setLives(int lives) {
+        this.lives = lives;
+    }
+
     private int lives = 3;
     private int fireRate = 30; // Lower is faster
     private int fireCooldown = 0;
