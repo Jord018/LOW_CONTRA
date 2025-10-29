@@ -46,14 +46,15 @@ public class GameController {
             player.setAimAngle(0);
         } else if (right && down) {
             player.setAimAngle(315);
-        } else if (down && !left && !right) {
-            player.setAimAngle(270);
         } else if (down && left) {
             player.setAimAngle(225);
         } else if (left && !up && !down) {
             player.setAimAngle(180);
         } else if (left && up) {
             player.setAimAngle(135);
+        } else {
+            // Default angle when no directional input - shoot right
+            player.setAimAngle(0);
         }
 
         if (activeKeys.contains(KeyCode.K)) {

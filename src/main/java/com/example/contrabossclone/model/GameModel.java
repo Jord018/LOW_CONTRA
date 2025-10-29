@@ -10,6 +10,7 @@ public class GameModel {
     private Player player;
     private List<Level> levels = new ArrayList<>();
     private int currentLevelIndex = 0;
+    private int currentStage = 1; // Track current stage (1-3)
 
     private List<Bullet> playerBullets = new ArrayList<>();
     private List<Bullet> bossBullets = new ArrayList<>();
@@ -25,31 +26,61 @@ public class GameModel {
         this.height = height;
         player = new Player(width / 2 - 25, height - 50);
 
-        // Level 1
-        List<Platform> level1Platforms = new ArrayList<>();
-        level1Platforms.add(new Platform(150, height - 150, 100, 20));
-        level1Platforms.add(new Platform(width - 250, height - 150, 100, 20));
-        List<PowerUp> level1PowerUps = new ArrayList<>();
-        level1PowerUps.add(new PowerUp(100, 300, PowerUp.PowerUpType.MACHINE_GUN));
-        level1PowerUps.add(new PowerUp(200, 300, PowerUp.PowerUpType.BARRIER));
-        level1PowerUps.add(new PowerUp(300, 300, PowerUp.PowerUpType.SPREAD_GUN));
-        level1PowerUps.add(new PowerUp(400, 300, PowerUp.PowerUpType.LASER));
-        level1PowerUps.add(new PowerUp(500, 300, PowerUp.PowerUpType.FIRE));
-        List<Boss> level1Bosses = new ArrayList<>();
-        level1Bosses.add(new Boss(width - 120, height - 120, player, new AimShoot()));
-        level1Bosses.add(new Boss(width - 240, height - 120, player, new DirectShoot()));
-        level1Bosses.add(new Boss(width - 360, height - 120, player, new AimShoot()));
-        levels.add(new Level(level1Bosses, level1Platforms, level1PowerUps, "/level1_bg.jpg"));
+        // Initialize all stages
+        initializeStage3();
+    }
 
-        // Level 2
-        List<Platform> level2Platforms = new ArrayList<>();
-        level2Platforms.add(new Platform(100, height - 100, 100, 20));
-        level2Platforms.add(new Platform(width - 200, height - 100, 100, 20));
-        level2Platforms.add(new Platform(350, height - 200, 100, 20));
-        List<PowerUp> level2PowerUps = new ArrayList<>();
-        List<Boss> level2Bosses = new ArrayList<>();
-        level2Bosses.add(new SecondBoss(width - 120, height - 120, player, new AimShoot()));
-        levels.add(new Level(level2Bosses, level2Platforms, level2PowerUps, "/level2_bg.png"));
+    /**
+     * Stage 1: Tutorial stage with multiple weak bosses and all power-ups available
+     */
+    private void initializeStage1() {
+        List<Platform> platforms = new ArrayList<>();
+        platforms.add(new Platform(150, height - 150, 100, 20));
+        platforms.add(new Platform(width - 250, height - 150, 100, 20));
+        
+        List<PowerUp> powerUps = new ArrayList<>();
+        powerUps.add(new PowerUp(100, 300, PowerUp.PowerUpType.MACHINE_GUN));
+        powerUps.add(new PowerUp(200, 300, PowerUp.PowerUpType.BARRIER));
+        powerUps.add(new PowerUp(300, 300, PowerUp.PowerUpType.SPREAD_GUN));
+        powerUps.add(new PowerUp(400, 300, PowerUp.PowerUpType.LASER));
+        powerUps.add(new PowerUp(500, 300, PowerUp.PowerUpType.FIRE));
+        
+        List<Boss> bosses = new ArrayList<>();
+        bosses.add(new Boss(width - 120, height - 120, player, new AimShoot()));
+        bosses.add(new Boss(width - 240, height - 120, player, new DirectShoot()));
+        bosses.add(new Boss(width - 360, height - 120, player, new AimShoot()));
+        
+        levels.add(new Level(bosses, platforms, powerUps, "/level1_bg.jpg"));
+    }
+
+    /**
+     * Stage 2: Intermediate stage with stronger boss and more platforms
+     */
+    private void initializeStage2() {
+        List<Platform> platforms = new ArrayList<>();
+        platforms.add(new Platform(100, height - 100, 100, 20));
+        platforms.add(new Platform(width - 200, height - 100, 100, 20));
+        platforms.add(new Platform(350, height - 200, 100, 20));
+        
+        List<PowerUp> powerUps = new ArrayList<>();
+        // No power-ups in stage 2 - player must rely on what they collected in stage 1
+        
+        List<Boss> bosses = new ArrayList<>();
+        bosses.add(new SecondBoss(width - 120, height - 120, player, new AimShoot()));
+        
+        levels.add(new Level(bosses, platforms, powerUps, "/level2_bg.png"));
+    }
+
+    /**
+     * Stage 3: Final stage with challenging boss configuration
+     */
+    private void initializeStage3() {
+        List<PowerUp> powerUps = new ArrayList<>();
+        List<Platform> platforms = new ArrayList<>();
+        
+        List<Boss> bosses = new ArrayList<>();
+        
+        levels.add(new Level(bosses, platforms, powerUps, "/level3_bg.png"));
     }
 
     public void update() {
@@ -135,18 +166,19 @@ public class GameModel {
 
         // Remove defeated bosses
         currentLevel.getBosses().removeIf(Boss::isDefeated);
-
+/*
         if (currentLevel.getBosses().isEmpty()) {
             if (currentLevelIndex < levels.size() - 1) {
                 currentLevelIndex++;
+                currentStage = currentLevelIndex + 1; // Update stage number
                 player.setX(width / 2 - 25);
                 player.setY(height - 50);
             } else {
                 gameOver = true;
-                gameOverMessage = "You Win!";
+                gameOverMessage = "You Win! All 3 Stages Completed!";
             }
         }
-
+*/
         if (player.getLives() <= 0) {
             gameOver = true;
             gameOverMessage = "Game Over";
@@ -226,4 +258,10 @@ public class GameModel {
         return height;
     }
 
+    /**
+     * Returns the current stage number (1-3)
+     */
+    public int getCurrentStage() {
+        return currentStage;
+    }
 }
