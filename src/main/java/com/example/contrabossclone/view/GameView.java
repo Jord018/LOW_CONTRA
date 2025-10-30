@@ -24,6 +24,7 @@ public class GameView {
 
         gc.setFill(Color.WHITE);
         gc.fillText("Lives: " + model.getPlayer().getLives(), 10, 20);
+        gc.fillText("Score: " + model.getPlayer().getScore(), 10, 40);
 
         if (model.isGameOver()) {
             gc.setFill(Color.WHITE);

@@ -24,6 +24,11 @@ public class Player {
 
     private double x, y;
     private double width = 40, height = 60;
+
+    public double getSpeed() {
+        return speed;
+    }
+
     private double speed = 5;
     private double dx = 0;
     private double velocityY = 0;
@@ -34,7 +39,15 @@ public class Player {
 
     private int maxHealth = 100;
 
+    public int getScore() {
+        return score;
+    }
 
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    private int score = 0;
     private int health = maxHealth;
 
     public void setLives(int lives) {

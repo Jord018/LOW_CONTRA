@@ -5,6 +5,7 @@ package com.example.contrabossclone.model;
 import com.example.contrabossclone.model.Boss.Boss;
 import com.example.contrabossclone.model.Boss.SecondBoss;
 import com.example.contrabossclone.model.Boss.ThirdBoss;
+import com.example.contrabossclone.model.Enemy.Enemy;
 import com.example.contrabossclone.model.Items.PowerUp;
 import com.example.contrabossclone.model.MachanicShoot.AimShoot;
 import com.example.contrabossclone.model.MachanicShoot.Bullet;
@@ -19,6 +20,7 @@ import java.util.List;
 public class GameModel {
 
     private Player player;
+    private Enemy enemy;
     private List<Level> levels = new ArrayList<>();
     private int currentLevelIndex = 0;
     private int currentStage = 1; // Track current stage (1-3)
@@ -91,13 +93,15 @@ public class GameModel {
         
         List<Boss> bosses = new ArrayList<>();
         bosses.add(new ThirdBoss(width - 120, height - 120, player, new ProjectileShoot()));
-
+        List<Enemy> enemies = new ArrayList<>();
+        enemy = new Enemy(width / 2 - 25, height - 50, player);
         levels.add(new Level(bosses, platforms, powerUps, "/level3_bg.png"));
     }
 
     public void update() {
         Level currentLevel = levels.get(currentLevelIndex);
         player.update(currentLevel.getPlatforms(), height);
+        enemy.update();
         for (Boss boss : currentLevel.getBosses()) {
             boss.update();
         }
@@ -150,6 +154,20 @@ public class GameModel {
         }
         bossBullets.removeAll(bossBulletsToRemove);
 
+        // Collision detection: player vs boss bodies
+        for (Boss boss : currentLevel.getBosses()) {
+            if (boss.getBounds().intersects(player.getBounds())) {
+                double playerCenterX = player.getX() + player.getWidth() / 2.0;
+                double bossCenterX = boss.getX() + boss.getWidth() / 2.0;
+                double newPlayerX = playerCenterX < bossCenterX
+                        ? boss.getX() - player.getWidth()
+                        : boss.getX() + boss.getWidth();
+
+                newPlayerX = Math.max(0, Math.min(newPlayerX, width - player.getWidth()));
+                player.setX(newPlayerX);
+            }
+        }
+
         // Collision detection: player vs power-ups
         List<PowerUp> powerUpsToRemove = new ArrayList<>();
         for (PowerUp powerUp : currentLevel.getPowerUps()) {
@@ -178,8 +196,9 @@ public class GameModel {
 
         // Remove defeated bosses
         currentLevel.getBosses().removeIf(Boss::isDefeated);
-/*
+//Score Update
         if (currentLevel.getBosses().isEmpty()) {
+            player.setScore(player.getScore() + 1);
             if (currentLevelIndex < levels.size() - 1) {
                 currentLevelIndex++;
                 currentStage = currentLevelIndex + 1; // Update stage number
@@ -187,14 +206,15 @@ public class GameModel {
                 player.setY(height - 50);
             } else {
                 gameOver = true;
-                gameOverMessage = "You Win! All 3 Stages Completed!";
+                gameOverMessage = "You Win! All 3 Stages Completed!" + player.getScore();
             }
         }
-*/
+
         if (player.getLives() <= 0) {
             gameOver = true;
             gameOverMessage = "Game Over";
         }
+
     }
 
     public void resize(double newWidth, double newHeight) {

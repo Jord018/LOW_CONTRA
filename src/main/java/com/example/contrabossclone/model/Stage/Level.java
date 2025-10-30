@@ -1,6 +1,7 @@
 package com.example.contrabossclone.model.Stage;
 
 import com.example.contrabossclone.model.Boss.Boss;
+import com.example.contrabossclone.model.Enemy.Enemy;
 import com.example.contrabossclone.model.Items.PowerUp;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
