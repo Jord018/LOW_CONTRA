@@ -28,6 +28,12 @@ public class GameModel {
     private List<Bullet> playerBullets = new ArrayList<>();
     private List<Bullet> bossBullets = new ArrayList<>();
 
+    public List<Bullet> getEnemyBullets() {
+        return enemyBullets;
+    }
+
+    private List<Bullet> enemyBullets = new ArrayList<>();
+
     private boolean gameOver = false;
     private String gameOverMessage = "";
 
@@ -62,8 +68,9 @@ public class GameModel {
         bosses.add(new Boss(width - 120, height - 120, player, new AimShoot()));
         bosses.add(new Boss(width - 240, height - 120, player, new DirectShoot()));
         bosses.add(new Boss(width - 360, height - 120, player, new AimShoot()));
-        
-        levels.add(new Level(bosses, platforms, powerUps, "/level1_bg.jpg"));
+        List<Enemy> enemies = new ArrayList<>();
+        enemies.add(new Enemy(width / 2 - 25, height - 50, player));
+        levels.add(new Level(bosses,enemies, platforms, powerUps, "/level1_bg.jpg"));
     }
 
     /**
@@ -80,8 +87,9 @@ public class GameModel {
         
         List<Boss> bosses = new ArrayList<>();
         bosses.add(new SecondBoss(width - 120, height - 120, player, new AimShoot()));
-        
-        levels.add(new Level(bosses, platforms, powerUps, "/level2_bg.png"));
+        List<Enemy> enemies = new ArrayList<>();
+        enemies.add(new Enemy(width / 2 - 25, height - 50, player));
+        levels.add(new Level(bosses,enemies, platforms, powerUps, "/level2_bg.png"));
     }
 
     /**
@@ -94,21 +102,32 @@ public class GameModel {
         List<Boss> bosses = new ArrayList<>();
         bosses.add(new ThirdBoss(width - 120, height - 120, player, new ProjectileShoot()));
         List<Enemy> enemies = new ArrayList<>();
-        enemy = new Enemy(width / 2 - 25, height - 50, player);
-        levels.add(new Level(bosses, platforms, powerUps, "/level3_bg.png"));
+        enemies.add(new Enemy(width / 2 + 100, height - 50, player));
+        levels.add(new Level(bosses,enemies, platforms, powerUps, "/level3_bg.png"));
     }
 
     public void update() {
         Level currentLevel = levels.get(currentLevelIndex);
         player.update(currentLevel.getPlatforms(), height);
-        enemy.update();
         for (Boss boss : currentLevel.getBosses()) {
             boss.update();
         }
-
+        // Update enemies and handle their shooting
+        for (Enemy enemy : currentLevel.getEnemies()) {
+            enemy.update(currentLevel.getPlatforms(), height);
+            
+            // Handle enemy shooting
+            if (enemy.isAlive()) {
+                List<Bullet> newEnemyBullets = enemy.shoot();
+                if (newEnemyBullets != null && !newEnemyBullets.isEmpty()) {
+                    enemyBullets.addAll(newEnemyBullets);
+                }
+            }
+        }
+        
         // Boss shooting
         for (Boss boss : currentLevel.getBosses()) {
-            List<Bullet> newBossBullets = boss.shoot(width, height); // <--- เพิ่ม width, height
+            List<Bullet> newBossBullets = boss.shoot(width, height);
             if (newBossBullets != null && !newBossBullets.isEmpty()) {
                 bossBullets.addAll(newBossBullets);
             }
@@ -123,6 +142,45 @@ public class GameModel {
             }
         }
         playerBullets.removeAll(playerBulletsToRemove);
+
+        // Update enemy bullets
+        List<Bullet> enemyBulletsToRemove = new ArrayList<>();
+        for (Bullet bullet : enemyBullets) {
+            bullet.update();
+            if (bullet.isOutOfBounds(width, height)) {
+                enemyBulletsToRemove.add(bullet);
+            }
+        }
+        enemyBullets.removeAll(enemyBulletsToRemove);
+
+
+        // Collision detection: player Bullet vs enemy
+        List<Enemy> enemiesToRemove = new ArrayList<>();
+        for (Bullet bullet : playerBullets) {
+            for (Enemy enemy : currentLevel.getEnemies()) {
+                if (enemy.isAlive() && bullet.getBounds().intersects(enemy.getBounds())) {
+                    System.out.println("Player hit enemy at ({}, {})" + enemy.getX() + enemy.getY());
+                    enemy.die();
+                    playerBulletsToRemove.add(bullet);
+                    enemiesToRemove.add(enemy);
+                    break; // Exit inner loop once bullet hits an enemy
+                }
+            }
+        }
+        // Remove hit enemies
+        currentLevel.getEnemies().removeAll(enemiesToRemove);
+        playerBullets.removeAll(playerBulletsToRemove);
+
+        // Collision detection: enemy bullets vs player
+        for (Bullet bullet : enemyBullets) {
+            if (bullet.getBounds().intersects(player.getBounds())) {
+                player.hit();
+                enemyBulletsToRemove.add(bullet);
+                System.out.println("Player hit by enemy bullet!"); // Debug message
+            }
+        }
+        enemyBullets.removeAll(enemyBulletsToRemove);
+
 
         // Update boss bullets
         List<Bullet> bossBulletsToRemove = new ArrayList<>();
@@ -157,17 +215,15 @@ public class GameModel {
         // Collision detection: player vs boss bodies
         for (Boss boss : currentLevel.getBosses()) {
             if (boss.getBounds().intersects(player.getBounds())) {
-                double playerCenterX = player.getX() + player.getWidth() / 2.0;
-                double bossCenterX = boss.getX() + boss.getWidth() / 2.0;
-                double newPlayerX = playerCenterX < bossCenterX
-                        ? boss.getX() - player.getWidth()
-                        : boss.getX() + boss.getWidth();
-
-                newPlayerX = Math.max(0, Math.min(newPlayerX, width - player.getWidth()));
-                player.setX(newPlayerX);
+                player.hit();
             }
         }
-
+        // Collision detection: player vs enemy
+        for (Enemy enemy : currentLevel.getEnemies()) {
+            if(enemy.getBounds().intersects(player.getBounds())) {
+                player.hit();
+            };
+        }
         // Collision detection: player vs power-ups
         List<PowerUp> powerUpsToRemove = new ArrayList<>();
         for (PowerUp powerUp : currentLevel.getPowerUps()) {

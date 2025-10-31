@@ -51,7 +51,7 @@ public class Main extends Application {
                 if (!model.isGameOver()) {
                     model.update();
                 }
-                view.render(gc);
+                view.render(gc, canvas);
             }
         }.start();
 

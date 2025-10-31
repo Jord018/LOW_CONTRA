@@ -12,12 +12,14 @@ import java.util.List;
 public class Level {
 
     private List<Boss> bosses;
+    private List<Enemy> enemies;
     private List<Platform> platforms;
     private List<PowerUp> powerUps;
     private Image backgroundImage;
 
-    public Level(List<Boss> bosses, List<Platform> platforms, List<PowerUp> powerUps, String backgroundImagePath) {
+    public Level(List<Boss> bosses,List<Enemy> enemies, List<Platform> platforms, List<PowerUp> powerUps, String backgroundImagePath) {
         this.bosses = bosses;
+        this.enemies = enemies;
         this.platforms = platforms;
         this.powerUps = powerUps;
         try {
@@ -45,12 +47,18 @@ public class Level {
         for (PowerUp powerUp : powerUps) {
             powerUp.render(gc);
         }
+        for (Enemy enemy : enemies) {
+            enemy.render(gc);
+        }
     }
 
     public List<Boss> getBosses() {
         return bosses;
     }
 
+    public List<Enemy> getEnemies() {
+        return enemies;
+    }
     public List<Platform> getPlatforms() {
         return platforms;
     }

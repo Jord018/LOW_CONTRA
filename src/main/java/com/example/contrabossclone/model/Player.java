@@ -31,6 +31,18 @@ public class Player {
     public double getSpeed() {
         return speed;
     }
+    
+    public void setSpeed(double speed) {
+        this.speed = speed;
+    }
+    
+    public void setWidth(double width) {
+        this.width = width;
+    }
+    
+    public void setHeight(double height) {
+        this.height = height;
+    }
 
     private double speed = 5;
     private double dx = 0;
@@ -70,7 +82,7 @@ public class Player {
         this.x = x;
         this.y = y;
         this.respawnX = x;
-        this.respawnY = y;
+        this.respawnY = 10;
     }
 
     public void moveLeft() {
@@ -257,6 +269,7 @@ public class Player {
                 }
             }
         }
+        logger.info("Player hit");
     }
 
     public void respawn() {
@@ -265,7 +278,7 @@ public class Player {
         y = respawnY;
         isInvincible = true;
         invincibilityTimer = 180; // 3 seconds of invincibility after respawning
-
+        logger.info("Player respawned");
     }
 
     public boolean isDefeated() {
