@@ -277,7 +277,8 @@ public class Player {
         x = respawnX;
         y = respawnY;
         isInvincible = true;
-        invincibilityTimer = 180; // 3 seconds of invincibility after respawning
+        //180
+        invincibilityTimer = 999999999; // 3 seconds of invincibility after respawning
         logger.info("Player respawned");
     }
 
