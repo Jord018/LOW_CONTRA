@@ -44,10 +44,10 @@ public class Player {
         this.height = height;
     }
 
-    private double speed = 5;
+    private double speed = 2;
     private double dx = 0;
     private double velocityY = 0;
-    private double gravity = 0.5;
+    private double gravity = 0.15;
     private boolean onGround = false;
     private boolean isPressingDown = false;
     private double aimAngle = 90.0;
@@ -106,7 +106,7 @@ public class Player {
                 y += 1;
                 logger.debug("Player fell through platform");
             } else {
-                velocityY = -15; // Jump strength
+                velocityY = -7; // Jump strength
                 logger.debug("Player jumped");
             }
             onGround = false;
@@ -254,7 +254,16 @@ public class Player {
     }
 
     public Rectangle2D getBounds() {
-        return new Rectangle2D(x, y, width, height);
+        if (isPressingDown) {
+            // ⭐️ ถ้ากด 'S' (ย่อตัว)
+            double crouchHeight = height / 2;
+            double crouchY = y + (height - crouchHeight); // เลื่อน y ลงมาเพื่อให้ส่วนล่างติดพื้น
+
+            return new Rectangle2D(x, crouchY, width, crouchHeight);
+        } else {
+            // ⭐️ ท่าปกติ (ยืน)
+            return new Rectangle2D(x, y, width, height);
+        }
     }
 
     public void hit() {

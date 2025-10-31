@@ -68,9 +68,9 @@ public class GameModel {
         powerUps.add(new PowerUp(500, 300, PowerUp.PowerUpType.FIRE));
         
         List<Boss> bosses = new ArrayList<>();
-        bosses.add(new Boss(width - 120, height - 120, player, new AimShoot()));
-        bosses.add(new Boss(width - 360, height - 120, player, new AimShoot()));
-        bosses.add(new Boss(460, 390, player, new DirectShoot()));
+        bosses.add(new Boss(440, 300,40,40, player, new AimShoot()));
+        bosses.add(new Boss(520, 300, 40,40,player, new AimShoot()));
+        bosses.add(new Boss(460, 330, 100,200,player, new DirectShoot()));
 
         List<Enemy> enemies = new ArrayList<>();
         enemies.add(new Enemy(width / 2 - 25, height - 50, player));
@@ -83,18 +83,16 @@ public class GameModel {
      */
     private void initializeStage2() {
         List<Platform> platforms = new ArrayList<>();
-        platforms.add(new Platform(100, height - 100, 100, 20));
-        platforms.add(new Platform(width - 200, height - 100, 100, 20));
-        platforms.add(new Platform(350, height - 200, 100, 20));
         
         List<PowerUp> powerUps = new ArrayList<>();
         // No power-ups in stage 2 - player must rely on what they collected in stage 1
         
         List<Boss> bosses = new ArrayList<>();
-        bosses.add(new SecondBoss(width - 120, height - 120, player, new AimShoot()));
+        bosses.add(new SecondBoss(width - 120, height - 120,0,0, player, new AimShoot()));
         List<Enemy> enemies = new ArrayList<>();
         enemies.add(new Enemy(width / 2 - 25, height - 50, player));
-        levels.add(new Level(bosses,enemies, platforms, powerUps, "/GameAssets/MapBossJava.png"));
+        levels.add(new Level(bosses, enemies, platforms, powerUps, "/GameAssets/MapBossJava.png",
+                500, 10, 350, 210)); // 👈 (sX, sY, sWidth, sHeight)
     }
 
     /**
@@ -103,9 +101,12 @@ public class GameModel {
     private void initializeStage3() {
         List<PowerUp> powerUps = new ArrayList<>();
         List<Platform> platforms = new ArrayList<>();
+        platforms.add(new Platform(100, height - 100, 100, 20));
+        platforms.add(new Platform(width - 200, height - 100, 100, 20));
+        platforms.add(new Platform(350, height - 200, 100, 20));
         
         List<Boss> bosses = new ArrayList<>();
-        bosses.add(new ThirdBoss(width - 120, height - 120, player, new ProjectileShoot()));
+        bosses.add(new ThirdBoss(width - 120, height - 120, 0,0 ,player, new ProjectileShoot()));
         List<Enemy> enemies = new ArrayList<>();
         enemies.add(new Enemy(width / 2 + 100, height - 50, player));
         levels.add(new Level(bosses,enemies, platforms, powerUps, "/level3_bg.png"));
@@ -113,7 +114,7 @@ public class GameModel {
 
     public void update() {
         Level currentLevel = levels.get(currentLevelIndex);
-        player.update(currentLevel.getPlatforms(), height);
+        player.update(currentLevel.getPlatforms(), height-50);
         for (Boss boss : currentLevel.getBosses()) {
             boss.update();
         }

@@ -14,16 +14,18 @@ import java.util.List;
 public class Boss {
 
     protected double x, y;
-    private double width = 100, height = 100;
+    private double width, height;
     private int health = 100;
     private double speed = 2;
     private int shootCooldown = 0;
     private Player player;
     private ShootingStrategy shootingStrategy;
 
-    public Boss(double x, double y, Player player, ShootingStrategy shootingStrategy) {
+    public Boss(double x, double y, double width, double height, Player player, ShootingStrategy shootingStrategy) {
         this.x = x;
         this.y = y;
+        this.width = width;   // 👈 2.1 กำหนดค่า
+        this.height = height; // 👈 2.2 กำหนดค่า
         this.player = player;
         this.shootingStrategy = shootingStrategy;
     }
@@ -43,19 +45,33 @@ public class Boss {
     }
 
     public void render(GraphicsContext gc) {
+
+        // --- คำนวณสัดส่วน ---
+        double baseHeight = height * 0.8;   // ฐานสูง 80%
+        double baseOffsetY = height * 0.2;  // ฐานขยับลงมา 20%
+
+        double gunWidth = width * 0.2;      // ปืนกว้าง 20%
+        double gunHeight = height * 0.4;    // ปืนสูง 40%
+        double gunOffsetX = (width - gunWidth) / 2; // ให้ปืนอยู่ตรงกลาง
+
+        double healthBarHeight = 10;      // ให้หลอดเลือดสูง 10px คงที่
+        double healthBarOffsetY = 20;     // ให้หลอดเลือดอยู่เหนือหัว 20px
+
+        // --- วาด ---
+
         // Base
         gc.setFill(Color.web("#A9A9A9"));
-        gc.fillRect(x, y + 20, width, height - 20);
+        gc.fillRect(x, y + baseOffsetY, width, baseHeight);
 
         // Gun
         gc.setFill(Color.web("#696969"));
-        gc.fillRect(x + 40, y, 20, 40);
+        gc.fillRect(x + gunOffsetX, y, gunWidth, gunHeight);
 
         // Health bar
         gc.setFill(Color.WHITE);
-        gc.fillRect(x, y - 20, width, 10);
+        gc.fillRect(x, y - healthBarOffsetY, width, healthBarHeight);
         gc.setFill(Color.RED);
-        gc.fillRect(x, y - 20, width * (health / 100.0), 10);
+        gc.fillRect(x, y - healthBarOffsetY, width * (health / 100.0), healthBarHeight);
     }
 
     public void hit() {

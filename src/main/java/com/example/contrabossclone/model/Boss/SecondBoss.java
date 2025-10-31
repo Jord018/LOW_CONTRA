@@ -8,8 +8,8 @@ import javafx.scene.paint.Color;
 
 public class SecondBoss extends Boss {
 
-    public SecondBoss(double x, double y, Player player, ShootingStrategy shootingStrategy) {
-        super(x, y, player, shootingStrategy);
+    public SecondBoss(double x, double y, double width, double height,Player player, ShootingStrategy shootingStrategy) {
+        super(x, y, width, height,player, shootingStrategy);
     }
 
     @Override

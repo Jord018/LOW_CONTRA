@@ -9,8 +9,8 @@ import javafx.scene.paint.Color;
 import java.util.List;
 
 public class ThirdBoss extends Boss{
-    public ThirdBoss(double x, double y, Player player, ShootingStrategy shootingStrategy) {
-        super(x, y, player, shootingStrategy);
+    public ThirdBoss(double x, double y,double width, double height, Player player, ShootingStrategy shootingStrategy) {
+        super(x, y, width, height,player, shootingStrategy);
     }
     public void update() {
         super.update();
