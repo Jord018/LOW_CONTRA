@@ -5,6 +5,9 @@ import com.example.contrabossclone.model.Stage.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.impl.Log4jLogEvent;
 
 
 import java.util.ArrayList;
@@ -38,8 +41,10 @@ public class Player {
     private double aimAngle = 90.0;
 
     private int maxHealth = 100;
+    private static final Logger logger = LogManager.getLogger(Player.class);
 
     public int getScore() {
+        logger.info("Player score: " + score);
         return score;
     }
 
@@ -70,10 +75,12 @@ public class Player {
 
     public void moveLeft() {
         dx = -speed;
+        logger.debug("Player moved left");
     }
 
     public void moveRight() {
         dx = speed;
+        logger.debug("Player moved right");
     }
 
     public void stop() {
@@ -85,8 +92,10 @@ public class Player {
             if (isPressingDown) {
                 // Fall through platform
                 y += 1;
+                logger.debug("Player fell through platform");
             } else {
                 velocityY = -15; // Jump strength
+                logger.debug("Player jumped");
             }
             onGround = false;
         }
@@ -115,6 +124,7 @@ public class Player {
             y = screenHeight - height;
             velocityY = 0;
             onGround = true;
+            logger.info("Player landed on ground");
         }
 
         // Check for platform collisions
@@ -125,6 +135,7 @@ public class Player {
                     y = platform.getY() - height;
                     velocityY = 0;
                     onGround = true;
+                    logger.info("Player landed on platform");
                 }
             }
         }
@@ -138,6 +149,7 @@ public class Player {
                 isInvincible = false;
             }
         }
+        logger.trace("Player position updated to " + x + " " + y);
     }
 
     public void render(GraphicsContext gc) {
@@ -175,12 +187,15 @@ public class Player {
 
         switch (weaponType) {
             case NORMAL:
+                logger.info("Weapon type NORMAL");
                 bullets.add(new Bullet(x + width / 2 - 2.5, y, velocityX, velocityY, Color.YELLOW, screenWidth, screenHeight));
                 break;
             case MACHINE_GUN:
+                logger.info("Weapon type MACHINE_GUN");
                 bullets.add(new Bullet(x + width / 2 - 2.5, y, velocityX, velocityY, Color.YELLOW, screenWidth, screenHeight));
                 break;
             case SPREAD_GUN:
+                logger.info("Weapon type SPREAD_GUN");
                 double angle1 = aimAngle - 15;
                 double angle2 = aimAngle + 15;
                 double velocityX1 = Math.cos(Math.toRadians(angle1)) * bulletSpeed;
@@ -192,14 +207,18 @@ public class Player {
                 bullets.add(new Bullet(x + width / 2 - 2.5, y, velocityX2, velocityY2, Color.YELLOW, screenWidth, screenHeight));
                 break;
             case LASER:
+                logger.info("Weapon type LASER");
                 // For now, laser will be a fast, long bullet
                 bullets.add(new Bullet(x + width / 2 - 1, y, velocityX * 2, velocityY * 2, Color.RED, 2, 100, screenWidth, screenHeight));
                 break;
             case FIRE:
+                logger.info("Weapon type FIRE");
                 bullets.add(new Bullet(x + width / 2 - 5, y, velocityX, velocityY, Color.ORANGE, 10, 10, screenWidth, screenHeight));
                 break;
         }
+        logger.debug("Player fired bullet: " + bullets.size());
         return bullets;
+
     }
 
     public void setAimAngle(double aimAngle) {
@@ -246,6 +265,7 @@ public class Player {
         y = respawnY;
         isInvincible = true;
         invincibilityTimer = 180; // 3 seconds of invincibility after respawning
+
     }
 
     public boolean isDefeated() {
