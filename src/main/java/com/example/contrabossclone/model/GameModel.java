@@ -109,8 +109,10 @@ public class GameModel {
         bosses.add(new ThirdBoss(width - 120, height - 120, 0,0 ,player, new ProjectileShoot()));
         List<Enemy> enemies = new ArrayList<>();
         enemies.add(new Enemy(width / 2 + 100, height - 50, player));
-        levels.add(new Level(bosses,enemies, platforms, powerUps, "/GameAssets/MapBossJava.png"));
+        levels.add(new Level(bosses, enemies, platforms, powerUps, "/GameAssets/MapBossJava.png",
+                2400, 10, 350, 210)); // 👈 (sX, sY, sWidth, sHeight)
     }
+
 
     public void update() {
         Level currentLevel = levels.get(currentLevelIndex);
