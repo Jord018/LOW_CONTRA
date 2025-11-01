@@ -36,6 +36,7 @@ public class GameModel {
 
     // ⭐️ (1) เราโหลด Sprite ของกระสุนบอสไว้ที่นี่
     private transient Image bossBulletSheet;
+    private transient Image bossJavaBulletSheet;
     private Rectangle2D bossBulletFrame;
 
     private boolean gameOver = false;
@@ -59,8 +60,17 @@ public class GameModel {
             this.bossBulletSheet = null;
         }
 
+        try {
+            this.bossJavaBulletSheet = new Image(getClass().getResourceAsStream("/GameAssets/BossJavaBullet.png"));
+            // ⭐️⭐️ (สำคัญ) แก้พิกัด (sX, sY, sW, sH) ให้ตรงกับไฟล์รูปของคุณ
+            this.bossBulletFrame = new Rectangle2D(0, 0, 93.75, 93.75); // (sX, sY, sW, sH)
+        } catch (Exception e) {
+            System.err.println("!!! Error loading boss bullet sprite!");
+            this.bossBulletSheet = null;
+        }
+
         // Initialize all stages
-        initializeStage1();
+//        initializeStage1();
         initializeStage2();
         initializeStage3(); // ⭐️ (เปิดใช้งานด่าน 3)
 
@@ -109,7 +119,7 @@ public class GameModel {
 
         List<Boss> bosses = new ArrayList<>();
         // ⭐️ (3) ส่ง Sprite ที่โหลดไว้ เข้าไปใน Constructor (ของ AimShoot)
-        bosses.add(new SecondBoss(330, 0, 270, 270, player, new AimShoot(bossBulletSheet, bossBulletFrame), "/GameAssets/BossJava.png"));
+        bosses.add(new SecondBoss(330, 0, 270, 270, player, new AimShoot(bossJavaBulletSheet, bossBulletFrame), "/GameAssets/BossJava.png"));
 
         List<Enemy> enemies = new ArrayList<>();
         // ⭐️ (3) ส่ง Sprite ที่โหลดไว้ เข้าไปใน Constructor ของ Enemy

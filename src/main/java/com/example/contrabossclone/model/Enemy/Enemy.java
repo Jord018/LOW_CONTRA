@@ -29,6 +29,7 @@ public class Enemy extends Player {
     private int animationSpeed = 10;
     private String currentState = "IDLE";
     private double lastX; // ⭐️ (ใช้เช็คว่ากำลังเดินหรือไม่)
+    private double groundLevel; // ⭐️ (ใช้เก็บค่าพื้น)
 
     // ⭐️ --- (3) เพิ่มตัวแปร Sprite กระสุน ---
     private transient Image bulletSpriteSheet;
@@ -42,6 +43,7 @@ public class Enemy extends Player {
         this.setHeight(70);
         this.setSpeed(0.5);
         this.lastX = x;
+        this.groundLevel = y + 50; // (ค่าเริ่มต้นชั่วคราว)
 
         // ⭐️ (4.1) เก็บ Sprite กระสุน
         this.bulletSpriteSheet = bulletSheet;
@@ -157,7 +159,9 @@ public class Enemy extends Player {
     }
 
     // ⭐️ --- (8) อัปเดต Shoot ---
-    public List<Bullet> shoot() {
+    @Override // ⭐️ (FIX 1.1) เพิ่ม Override
+    // ⭐️ (FIX 1.2) เพิ่มพารามิเตอร์ (width, height)
+    public List<Bullet> shoot(double screenWidth, double screenHeight) {
         List<Bullet> newBullets = new ArrayList<>();
         if (target == null || shootCooldown > 0 || !canSeeTarget())
             return newBullets;
@@ -168,12 +172,11 @@ public class Enemy extends Player {
         double velocityY = Math.sin(angle) * bulletSpeed;
 
         // (8.1) ⭐️ เรียก Constructor ใหม่ของ Bullet (แบบ Sprite)
-        // (ใช้ Sprite ที่รับมาจาก Constructor)
         newBullets.add(new Bullet(getX() + getWidth() / 2, getY() + getHeight() / 2,
                 velocityX, velocityY,
                 bulletSpriteSheet, bulletFrame,
                 10, 10, // ⭐️ ขนาดกระสุน (w, h)
-                800, 600)); // ⭐️ (screenWidth, screenHeight - ควรแก้เป็นตัวแปร)
+                screenWidth, screenHeight)); // ⭐️ (ส่งต่อ)
 
         shootCooldown = SHOOT_DELAY;
         return newBullets;
@@ -184,7 +187,7 @@ public class Enemy extends Player {
 
         // Simple AI: move towards player if not too close
         double distance = Math.hypot(target.getX() - getX(), target.getY() - getY());
-        if (distance > 200) { // Keep some distance
+        if (distance > 50) { // Keep some distance
             double dx = target.getX() - getX();
             double dy = target.getY() - getY();
             double angle = Math.atan2(dy, dx);
@@ -213,9 +216,10 @@ public class Enemy extends Player {
         return new Rectangle2D(getX(), getY(), getWidth(), getHeight());
     }
 
-
+    // ⭐️ (FIX) ลบ @Override ออก
     public boolean isOnGround() {
-        return getY() + getHeight() >= 600; // Replace with actual screen height
+        // ⭐️ (FIX 2.2) ใช้ groundLevel ที่เก็บไว้
+        return getY() + getHeight() >= this.groundLevel + 5; // (เพิ่ม +5 buffer)
     }
 
 }
