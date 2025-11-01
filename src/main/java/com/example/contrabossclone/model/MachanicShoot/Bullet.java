@@ -28,6 +28,8 @@ public class Bullet {
         this.color = color;
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
+        this.width = 10; // ⭐️ (กำหนดขนาดเริ่มต้น)
+        this.height = 10; // ⭐️ (กำหนดขนาดเริ่มต้น)
         this.useSprite = false; // ⭐️
     }
 
@@ -74,7 +76,7 @@ public class Bullet {
 
         } else {
             // ⭐️ --- 3.2: ถ้าไม่ใช้ Sprite (โค้ดเดิม) ---
-            gc.setFill(color);
+            gc.setFill(color != null ? color : Color.MAGENTA); // ⭐️ (ป้องกัน Null)
             gc.fillRect(x, y, width, height);
         }
     }

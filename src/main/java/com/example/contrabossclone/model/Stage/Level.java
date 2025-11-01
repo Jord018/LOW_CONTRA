@@ -6,6 +6,7 @@ import com.example.contrabossclone.model.Items.PowerUp;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.geometry.Rectangle2D;
 
 import java.util.List;
 
@@ -17,13 +18,19 @@ public class Level {
     private List<PowerUp> powerUps;
     private Image backgroundImage;
 
+    // --- ตัวแปรสำหรับ Crop ---
     private boolean doCrop;
     private double sourceX;
     private double sourceY;
     private double sourceWidth;
     private double sourceHeight;
 
-    public Level(List<Boss> bosses,List<Enemy> enemies, List<Platform> platforms, List<PowerUp> powerUps, String backgroundImagePath) {
+    // ⭐️ --- (1) เพิ่มตัวแปร groundLevel ---
+    private double groundLevel;
+
+    // --- (2) Constructor 1 (แบบไม่ Crop + groundLevel) ---
+    // (ใช้สำหรับด่าน 3)
+    public Level(List<Boss> bosses,List<Enemy> enemies, List<Platform> platforms, List<PowerUp> powerUps, String backgroundImagePath, double groundLevel) {
         this.bosses = bosses;
         this.enemies = enemies;
         this.platforms = platforms;
@@ -34,14 +41,17 @@ public class Level {
             System.out.println("Error loading background image: " + backgroundImagePath);
             this.backgroundImage = null;
         }
+        this.groundLevel = groundLevel; // ⭐️ ตั้งค่า groundLevel
         this.doCrop = false;
     }
 
+    // --- (3) Constructor 2 (แบบ Crop + groundLevel) ---
+    // (ใช้สำหรับด่าน 1 และ 2)
     public Level(List<Boss> bosses, List<Enemy> enemies, List<Platform> platforms, List<PowerUp> powerUps, String backgroundImagePath,
-                 double sourceX, double sourceY, double sourceWidth, double sourceHeight) {
+                 double sourceX, double sourceY, double sourceWidth, double sourceHeight, double groundLevel) { // ⭐️ เพิ่ม groundLevel
 
-        // เรียก Constructor เดิมก่อน
-        this(bosses, enemies, platforms, powerUps, backgroundImagePath);
+        // ⭐️ เรียก Constructor ตัวบน
+        this(bosses, enemies, platforms, powerUps, backgroundImagePath, groundLevel);
 
         // เก็บค่าพิกัดการ Crop
         this.sourceX = sourceX;
@@ -83,8 +93,15 @@ public class Level {
             powerUp.render(gc);
         }
         for (Enemy enemy : enemies) {
-            enemy.render(gc);
+            if (enemy.isAlive()) { // ⭐️ เพิ่ม (วาดเฉพาะ Enemy ที่ยังไม่ตาย)
+                enemy.render(gc);
+            }
         }
+    }
+
+    // ⭐️ --- (4) เพิ่ม Getter สำหรับ groundLevel ---
+    public double getGroundLevel() {
+        return groundLevel;
     }
 
     public List<Boss> getBosses() {
