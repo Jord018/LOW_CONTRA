@@ -532,15 +532,23 @@ public class Player {
 
     // ⭐️ --- (9) อัปเดต getBounds ให้ใช้ขนาดของท่าหมอบที่ถูกต้อง ---
     public Rectangle2D getBounds() {
-        double w = isPressingDown ? PRONE_WIDTH : width;
-        double h = isPressingDown ? PRONE_HEIGHT : height;
+        double w = (isPressingDown && dx == 0) ? PRONE_WIDTH : width;
+        double h = (isPressingDown && dx == 0) ? PRONE_HEIGHT : height;
 
-        // x กึ่งกลาง
+        // ปรับ Y ให้ด้านล่าง hitbox อยู่ตำแหน่งเดิม
+        double bottomY = y + (isPressingDown ? PRONE_HEIGHT : height); // ปัจจุบัน
+        double adjustedY = bottomY - h;
+
         double centerX = x + width / 2;
         double leftX = centerX - w / 2;
 
-        return new Rectangle2D(leftX, y, w, h);
+        return new Rectangle2D(leftX, adjustedY, w, h);
     }
+
+
+
+
+
 
 
 
