@@ -44,8 +44,8 @@ public class GameModel {
         player = new Player(width / 2 - 25, height - 50);
 
         // Initialize all stages
-        initializeStage1();
-//        initializeStage2();
+//        initializeStage1();
+        initializeStage2();
 //        initializeStage3();
 
     }
@@ -88,7 +88,7 @@ public class GameModel {
         // No power-ups in stage 2 - player must rely on what they collected in stage 1
         
         List<Boss> bosses = new ArrayList<>();
-        bosses.add(new SecondBoss(450, 0,150,150, player, new AimShoot()));
+        bosses.add(new SecondBoss(330, 0, 270, 270, player, new AimShoot(), "/GameAssets/BossJava.png"));
         List<Enemy> enemies = new ArrayList<>();
         enemies.add(new Enemy(width / 2 - 25, height - 50, player));
         levels.add(new Level(bosses, enemies, platforms, powerUps, "/GameAssets/MapBossJava.png",
