@@ -97,5 +97,6 @@ public class PlayerTest {
             assertTrue(gameModel.getGameOverMessage().contains("You Win!"), "Should show win message");
         }
     }
-
+    @Test
+    void PlayerShouldRespawn_WhenHit(){}
 }

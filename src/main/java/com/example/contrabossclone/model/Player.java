@@ -31,7 +31,7 @@ public class Player {
     private double x, y;
     private double width = 40, height = 60;
     private final double PRONE_WIDTH = 40;
-    private final double PRONE_HEIGHT = 60;
+    private final double PRONE_HEIGHT = 30;
 
     public double getSpeed() {
         return speed;
@@ -255,13 +255,9 @@ public class Player {
             double bottomY = y + (isPressingDown ? PRONE_HEIGHT : height);
 
             this.isPressingDown = pressingDown;
-
+            y = bottomY - (pressingDown ? PRONE_HEIGHT : height);
             // หลังเปลี่ยนท่า ให้เท้ายังอยู่ที่เดิม
-            if (pressingDown) {
-                y = bottomY - PRONE_HEIGHT;
-            } else {
-                y = bottomY - height;
-            }
+
         }
     }
 
@@ -441,6 +437,9 @@ public class Player {
             gc.setLineWidth(2);
             gc.strokeRect(hitbox.getMinX(), hitbox.getMinY(), hitbox.getWidth(), hitbox.getHeight());
         }
+        gc.setStroke(Color.RED);
+        gc.setLineWidth(2);
+        gc.strokeRect(hitbox.getMinX(), hitbox.getMinY(), hitbox.getWidth(), hitbox.getHeight());
     }
 
     // เมธอดสำรอง เผื่อ Sprite โหลดไม่ขึ้น
@@ -533,21 +532,17 @@ public class Player {
 
     // ⭐️ --- (9) อัปเดต getBounds ให้ใช้ขนาดของท่าหมอบที่ถูกต้อง ---
     public Rectangle2D getBounds() {
-        if (isPressingDown) {
-            // คำนวณ y ของท่าหมอบใหม่ ให้เท้าอยู่ที่เดิม
-            double standBottomY = y + height; // y ของเท้าท่ายืน
-            double proneTopY = standBottomY - PRONE_HEIGHT; // y ของหัวท่าหมอบ
+        double w = isPressingDown ? PRONE_WIDTH : width;
+        double h = isPressingDown ? PRONE_HEIGHT : height;
 
-            // คำนวณ x ของท่าหมอบ ให้กึ่งกลางอยู่ที่เดิม
-            double standCenterX = x + width / 2;
-            double proneLeftX = standCenterX - (PRONE_WIDTH / 2);
+        // x กึ่งกลาง
+        double centerX = x + width / 2;
+        double leftX = centerX - w / 2;
 
-            return new Rectangle2D(proneLeftX, proneTopY, PRONE_WIDTH, PRONE_HEIGHT);
-        } else {
-            // ท่าปกติ (ยืน)
-            return new Rectangle2D(x, y, width, height);
-        }
+        return new Rectangle2D(leftX, y, w, h);
     }
+
+
 
     public void hit() {
         if (!isInvincible) {
