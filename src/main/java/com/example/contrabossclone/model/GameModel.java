@@ -11,6 +11,8 @@ import com.example.contrabossclone.model.MachanicShoot.DirectShoot;
 import com.example.contrabossclone.model.MachanicShoot.ProjectileShoot;
 import com.example.contrabossclone.model.Stage.Level;
 import com.example.contrabossclone.model.Stage.Platform;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.image.Image;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,9 +46,9 @@ public class GameModel {
         player = new Player(width / 2 - 25, height - 50);
 
         // Initialize all stages
-//        initializeStage1();
+        initializeStage1();
         initializeStage2();
-//        initializeStage3();
+        initializeStage3();
 
     }
 
@@ -73,7 +75,7 @@ public class GameModel {
         bosses.add(new Boss(460, 330, 100,200,player, new DirectShoot(), false));
 
         List<Enemy> enemies = new ArrayList<>();
-        enemies.add(new Enemy(width / 2 - 25, height - 50, player));
+        enemies.add(new Enemy(300,300,player,"/GameAssets/Enemy2.png",new Image("/GameAssets/BossWallBullet.png"), Rectangle2D.EMPTY));
         levels.add(new Level(bosses, enemies, platforms, powerUps, "/GameAssets/MapBossWall.png",
                 3150, 10, 350, 210)); // 👈 (sX, sY, sWidth, sHeight)
         }
@@ -90,7 +92,7 @@ public class GameModel {
         List<Boss> bosses = new ArrayList<>();
         bosses.add(new SecondBoss(330, 0, 270, 270, player, new AimShoot(), "/GameAssets/BossJava.png"));
         List<Enemy> enemies = new ArrayList<>();
-        enemies.add(new Enemy(width / 2 - 25, height - 50, player));
+        enemies.add(new Enemy(0,0,player,"/GameAssets/Enemy2.png",new Image("/GameAssets/BossWallBullet.png"), Rectangle2D.EMPTY));
         levels.add(new Level(bosses, enemies, platforms, powerUps, "/GameAssets/MapBossJava.png",
                 500, 10, 350, 210)); // 👈 (sX, sY, sWidth, sHeight)
     }
@@ -111,7 +113,7 @@ public class GameModel {
         bosses.add(new ThirdBoss(width - 120, height - 120, 0,0 ,player, new ProjectileShoot()));
         bosses.add(new ThirdBoss(width - 120, height - 120, 0,0 ,player, new ProjectileShoot()));
         List<Enemy> enemies = new ArrayList<>();
-        enemies.add(new Enemy(width / 2 + 100, height - 50, player));
+        enemies.add(new Enemy(0,0,player,"/GameAssets/Enemy2.png",new Image("/GameAssets/BossWallBullet.png"), Rectangle2D.EMPTY));
         levels.add(new Level(bosses, enemies, platforms, powerUps, "/GameAssets/MapBossJava.png",
                 2400, 10, 350, 210)); // 👈 (sX, sY, sWidth, sHeight)
     }
