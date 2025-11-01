@@ -36,15 +36,15 @@ public class Player {
     public double getSpeed() {
         return speed;
     }
-    
+
     public void setSpeed(double speed) {
         this.speed = speed;
     }
-    
+
     public void setWidth(double width) {
         this.width = width;
     }
-    
+
     public void setHeight(double height) {
         this.height = height;
     }
@@ -460,42 +460,27 @@ public class Player {
         List<Bullet> bullets = new ArrayList<>();
         double bulletSpeed = 10;
 
-        // --- 🔹 ใช้ hitbox ปัจจุบันแทน (จะเล็กลงตอนหมอบ) ---
         Rectangle2D hitbox = getBounds();
-        double fireX = hitbox.getMinX() + hitbox.getWidth() / 2;  // จุดกลางแนวนอน
-        double fireY = hitbox.getMinY() + hitbox.getHeight() / 2; // จุดกลางแนวตั้ง
+        //แก้ตรงนี้
+        // ปล่อยกระสุนจากกลางตัวละคร
+        double fireX = hitbox.getMinX() + hitbox.getWidth() / 2;
+        double fireY = isPressingDown
+                ? hitbox.getMinY() + hitbox.getHeight() * 0.6
+                : hitbox.getMinY() + hitbox.getHeight() * 0.4;
 
-        // Adjust bullet spawn position based on facing direction
-        double xOffset = facingRight ? 0 : -hitbox.getWidth();
-        fireX = facingRight ? hitbox.getMaxX() : hitbox.getMinX();
-        
-        // Adjust vertical position based on whether player is crouching
-        if (isPressingDown) {
-            fireY = hitbox.getMinY() + hitbox.getHeight() * 0.6; // ต่ำลงหน่อยตอนหมอบ
-        } else {
-            fireY = hitbox.getMinY() + hitbox.getHeight() * 0.4; // ปกติสูงขึ้นหน่อย
-        }
-
-        // Adjust the angle based on player's facing direction
-        double shootingAngle = facingRight ? aimAngle : 180 - aimAngle;
-
-        // Calculate velocities based on the adjusted angle
-        double velocityX = Math.cos(Math.toRadians(shootingAngle)) * bulletSpeed;
-        double velocityY = -Math.sin(Math.toRadians(shootingAngle)) * bulletSpeed;
+        // ใช้ aimAngle ตรง ๆ ไม่ต้องปรับตาม facingRight
+        double velocityX = Math.cos(Math.toRadians(aimAngle)) * bulletSpeed;
+        double velocityY = -Math.sin(Math.toRadians(aimAngle)) * bulletSpeed;
 
         switch (weaponType) {
             case NORMAL:
-                bullets.add(new Bullet(fireX, fireY, velocityX, velocityY, Color.YELLOW, screenWidth, screenHeight));
-                break;
             case MACHINE_GUN:
                 bullets.add(new Bullet(fireX, fireY, velocityX, velocityY, Color.YELLOW, screenWidth, screenHeight));
                 break;
             case SPREAD_GUN:
-                double angle1 = aimAngle - 15;
-                double angle2 = aimAngle + 15;
-                bullets.add(new Bullet(fireX, fireY, Math.cos(Math.toRadians(angle1)) * bulletSpeed, -Math.sin(Math.toRadians(angle1)) * bulletSpeed, Color.YELLOW, screenWidth, screenHeight));
+                bullets.add(new Bullet(fireX, fireY, Math.cos(Math.toRadians(aimAngle - 15)) * bulletSpeed, -Math.sin(Math.toRadians(aimAngle - 15)) * bulletSpeed, Color.YELLOW, screenWidth, screenHeight));
                 bullets.add(new Bullet(fireX, fireY, velocityX, velocityY, Color.YELLOW, screenWidth, screenHeight));
-                bullets.add(new Bullet(fireX, fireY, Math.cos(Math.toRadians(angle2)) * bulletSpeed, -Math.sin(Math.toRadians(angle2)) * bulletSpeed, Color.YELLOW, screenWidth, screenHeight));
+                bullets.add(new Bullet(fireX, fireY, Math.cos(Math.toRadians(aimAngle + 15)) * bulletSpeed, -Math.sin(Math.toRadians(aimAngle + 15)) * bulletSpeed, Color.YELLOW, screenWidth, screenHeight));
                 break;
             case LASER:
                 bullets.add(new Bullet(fireX, fireY, velocityX * 2, velocityY * 2, Color.RED, 2, 100, screenWidth, screenHeight));
@@ -508,6 +493,7 @@ public class Player {
         logger.debug("Player fired bullet: " + bullets.size());
         return bullets;
     }
+
 
 
     public void setAimAngle(double aimAngle) {
@@ -610,4 +596,7 @@ public class Player {
     public void setY(double y) {
         this.y = y;
     }
+    public boolean isFacingRight() {return facingRight;}
+
+
 }
