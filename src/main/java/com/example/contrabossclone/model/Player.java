@@ -197,21 +197,21 @@ public class Player {
         // --- เดินแล้วยิงเฉียงลง ---
         animations.put("RUN_AIM_DOWN_R", new Rectangle2D[] {
                 //แก้ตรงนี้
-                new Rectangle2D(384, 256, 128, 128),
-                new Rectangle2D(512, 256, 128, 128),
-                new Rectangle2D(640, 256, 128, 128),
-                new Rectangle2D(0, 384, 128, 128),
-                new Rectangle2D(128, 384, 128, 128),
-                new Rectangle2D(256, 384, 128, 128)
+                new Rectangle2D(384, 384, 128, 128),
+                new Rectangle2D(512, 384, 128, 128),
+                new Rectangle2D(640, 384, 128, 128),
+                new Rectangle2D(0, 512, 128, 128),
+                new Rectangle2D(128, 512, 128, 128),
+                new Rectangle2D(256, 512, 128, 128)
         });
         animations.put("RUN_AIM_DOWN_L", new Rectangle2D[] {
                 //แก้ตรงนี้
-                new Rectangle2D(384, 256, 128, 128),
-                new Rectangle2D(512, 256, 128, 128),
-                new Rectangle2D(640, 256, 128, 128),
-                new Rectangle2D(0, 384, 128, 128),
-                new Rectangle2D(128, 384, 128, 128),
-                new Rectangle2D(256, 384, 128, 128)
+                new Rectangle2D(384, 384, 128, 128),
+                new Rectangle2D(512, 384, 128, 128),
+                new Rectangle2D(640, 384, 128, 128),
+                new Rectangle2D(0, 512, 128, 128),
+                new Rectangle2D(128, 512, 128, 128),
+                new Rectangle2D(256, 512, 128, 128)
         });
         //หมอบ
         animations.put("CROUCH_L", new Rectangle2D[] { new Rectangle2D(256, 256, 128, 128) });
