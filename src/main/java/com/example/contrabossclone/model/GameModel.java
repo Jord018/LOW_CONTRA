@@ -44,9 +44,9 @@ public class GameModel {
         player = new Player(width / 2 - 25, height - 50);
 
         // Initialize all stages
-//        initializeStage1();
-        initializeStage2();
-        initializeStage3();
+        initializeStage1();
+//        initializeStage2();
+//        initializeStage3();
 
     }
 
@@ -68,9 +68,9 @@ public class GameModel {
         powerUps.add(new PowerUp(500, 300, PowerUp.PowerUpType.FIRE));
         
         List<Boss> bosses = new ArrayList<>();
-        bosses.add(new Boss(440, 300,40,40, player, new AimShoot()));
-        bosses.add(new Boss(520, 300, 40,40,player, new AimShoot()));
-        bosses.add(new Boss(460, 330, 100,200,player, new DirectShoot()));
+        bosses.add(new Boss(440, 300,40,40, player, new ProjectileShoot()));
+        bosses.add(new Boss(520, 300, 40,40,player, new ProjectileShoot()));
+        bosses.add(new Boss(460, 330, 100,200,player, new DirectShoot(), false));
 
         List<Enemy> enemies = new ArrayList<>();
         enemies.add(new Enemy(width / 2 - 25, height - 50, player));
@@ -98,6 +98,7 @@ public class GameModel {
     /**
      * Stage 3: Final stage with challenging boss configuration
      */
+    //พรุ่งนี้ก่อน
     private void initializeStage3() {
         List<PowerUp> powerUps = new ArrayList<>();
         List<Platform> platforms = new ArrayList<>();
@@ -106,6 +107,8 @@ public class GameModel {
         platforms.add(new Platform(350, height - 200, 100, 20));
         
         List<Boss> bosses = new ArrayList<>();
+        bosses.add(new ThirdBoss(width - 120, height - 120, 0,0 ,player, new ProjectileShoot()));
+        bosses.add(new ThirdBoss(width - 120, height - 120, 0,0 ,player, new ProjectileShoot()));
         bosses.add(new ThirdBoss(width - 120, height - 120, 0,0 ,player, new ProjectileShoot()));
         List<Enemy> enemies = new ArrayList<>();
         enemies.add(new Enemy(width / 2 + 100, height - 50, player));

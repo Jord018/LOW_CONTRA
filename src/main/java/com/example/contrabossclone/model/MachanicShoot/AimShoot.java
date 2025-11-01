@@ -9,10 +9,10 @@ import java.util.List;
 public class AimShoot implements ShootingStrategy {
     @Override
     // 1. เพิ่ม screenWidth และ screenHeight ตรงนี้
-    public List<Bullet> shoot(double x, double y, Player player, double screenWidth, double screenHeight) {
+    public List<Bullet> shoot(double x, double y, Player player, double screenWidth, double screenHeight, double bulletSpeed) {
         List<Bullet> bullets = new ArrayList<>();
         double angle = Math.toDegrees(Math.atan2(player.getY() - y, player.getX() - x));
-        double bulletSpeed = 5;
+        bulletSpeed = 5;
         double velocityX = Math.cos(Math.toRadians(angle)) * bulletSpeed;
         double velocityY = Math.sin(Math.toRadians(angle)) * bulletSpeed;
 

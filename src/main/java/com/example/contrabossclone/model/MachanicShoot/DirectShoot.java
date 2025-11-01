@@ -8,9 +8,9 @@ import java.util.List;
 
 public class DirectShoot implements ShootingStrategy {
     @Override
-    public List<Bullet> shoot(double x, double y, Player player, double screenWidth, double screenHeight) { // <--- เพิ่มพารามิเตอร์
+    public List<Bullet> shoot(double x, double y, Player player, double screenWidth, double screenHeight, double bulletSpeed) { // <--- เพิ่มพารามิเตอร์
         List<Bullet> bullets = new ArrayList<>();
-        double bulletSpeed = 5;
+         bulletSpeed = 5;
         // Shoot straight to the right for simplicity, can be modified
         double velocityX = bulletSpeed;
         double velocityY = 0;

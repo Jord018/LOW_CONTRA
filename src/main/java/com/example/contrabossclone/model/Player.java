@@ -194,7 +194,26 @@ public class Player {
                 new Rectangle2D(128, 384, 128, 128),
                 new Rectangle2D(256, 384, 128, 128)
         });
-
+        // --- เดินแล้วยิงเฉียงลง ---
+        animations.put("RUN_AIM_DOWN_R", new Rectangle2D[] {
+                //แก้ตรงนี้
+                new Rectangle2D(384, 256, 128, 128),
+                new Rectangle2D(512, 256, 128, 128),
+                new Rectangle2D(640, 256, 128, 128),
+                new Rectangle2D(0, 384, 128, 128),
+                new Rectangle2D(128, 384, 128, 128),
+                new Rectangle2D(256, 384, 128, 128)
+        });
+        animations.put("RUN_AIM_DOWN_L", new Rectangle2D[] {
+                //แก้ตรงนี้
+                new Rectangle2D(384, 256, 128, 128),
+                new Rectangle2D(512, 256, 128, 128),
+                new Rectangle2D(640, 256, 128, 128),
+                new Rectangle2D(0, 384, 128, 128),
+                new Rectangle2D(128, 384, 128, 128),
+                new Rectangle2D(256, 384, 128, 128)
+        });
+        //หมอบ
         animations.put("CROUCH_L", new Rectangle2D[] { new Rectangle2D(256, 256, 128, 128) });
     }
 
@@ -230,8 +249,22 @@ public class Player {
     }
 
     public void setPressingDown(boolean pressingDown) {
-        isPressingDown = pressingDown;
+        // ป้องกันไม่ให้ขยับ y ทุกเฟรม (เฉพาะตอนเปลี่ยนสถานะเท่านั้น)
+        if (this.isPressingDown != pressingDown) {
+            // เก็บตำแหน่งเท้าปัจจุบันไว้ก่อนเปลี่ยน
+            double bottomY = y + (isPressingDown ? PRONE_HEIGHT : height);
+
+            this.isPressingDown = pressingDown;
+
+            // หลังเปลี่ยนท่า ให้เท้ายังอยู่ที่เดิม
+            if (pressingDown) {
+                y = bottomY - PRONE_HEIGHT;
+            } else {
+                y = bottomY - height;
+            }
+        }
     }
+
 
     public void setRespawnPosition(double x, double y) {
         this.respawnX = x;
@@ -285,8 +318,19 @@ public class Player {
         // 1. ตรวจสอบสถานะปัจจุบัน
         String newState = "STAND"; // ท่าเริ่มต้น
         if (isPressingDown) {
-            newState = "CROUCH";
-        } else if (!onGround) {
+            if (dx > 0) {
+                newState = "RUN_AIM_DOWN";  // 🔹 เดินขวา + หมอบ → ยิงเฉียงลงขวา
+                aimAngle = 315;              // ทิศเฉียงลงขวา
+            } else if (dx < 0) {
+                newState = "RUN_AIM_DOWN";  // 🔹 เดินซ้าย + หมอบ → ยิงเฉียงลงซ้าย
+                aimAngle = 225;              // ทิศเฉียงลงซ้าย
+            } else {
+                newState = "CROUCH";
+                aimAngle = 270;              // หมอบยิงตรงลง (ถ้าต้องการ)
+            }
+        }
+
+        else if (!onGround) {
             newState = "JUMP";
         } else if (dx != 0) { // กำลังวิ่ง
             if (aimAngle == 45 || aimAngle == 135) {
@@ -416,44 +460,56 @@ public class Player {
         fireCooldown = fireRate;
         List<Bullet> bullets = new ArrayList<>();
         double bulletSpeed = 10;
-        double velocityX = Math.cos(Math.toRadians(aimAngle)) * bulletSpeed;
-        double velocityY = -Math.sin(Math.toRadians(aimAngle)) * bulletSpeed;
+
+        // --- 🔹 ใช้ hitbox ปัจจุบันแทน (จะเล็กลงตอนหมอบ) ---
+        Rectangle2D hitbox = getBounds();
+        double fireX = hitbox.getMinX() + hitbox.getWidth() / 2;  // จุดกลางแนวนอน
+        double fireY = hitbox.getMinY() + hitbox.getHeight() / 2; // จุดกลางแนวตั้ง
+
+        // Adjust bullet spawn position based on facing direction
+        double xOffset = facingRight ? 0 : -hitbox.getWidth();
+        fireX = facingRight ? hitbox.getMaxX() : hitbox.getMinX();
+        
+        // Adjust vertical position based on whether player is crouching
+        if (isPressingDown) {
+            fireY = hitbox.getMinY() + hitbox.getHeight() * 0.6; // ต่ำลงหน่อยตอนหมอบ
+        } else {
+            fireY = hitbox.getMinY() + hitbox.getHeight() * 0.4; // ปกติสูงขึ้นหน่อย
+        }
+
+        // Adjust the angle based on player's facing direction
+        double shootingAngle = facingRight ? aimAngle : 180 - aimAngle;
+
+        // Calculate velocities based on the adjusted angle
+        double velocityX = Math.cos(Math.toRadians(shootingAngle)) * bulletSpeed;
+        double velocityY = -Math.sin(Math.toRadians(shootingAngle)) * bulletSpeed;
 
         switch (weaponType) {
             case NORMAL:
-                logger.info("Weapon type NORMAL");
-                bullets.add(new Bullet(x + width / 2 - 2.5, y, velocityX, velocityY, Color.YELLOW, screenWidth, screenHeight));
+                bullets.add(new Bullet(fireX, fireY, velocityX, velocityY, Color.YELLOW, screenWidth, screenHeight));
                 break;
             case MACHINE_GUN:
-                logger.info("Weapon type MACHINE_GUN");
-                bullets.add(new Bullet(x + width / 2 - 2.5, y, velocityX, velocityY, Color.YELLOW, screenWidth, screenHeight));
+                bullets.add(new Bullet(fireX, fireY, velocityX, velocityY, Color.YELLOW, screenWidth, screenHeight));
                 break;
             case SPREAD_GUN:
-                logger.info("Weapon type SPREAD_GUN");
                 double angle1 = aimAngle - 15;
                 double angle2 = aimAngle + 15;
-                double velocityX1 = Math.cos(Math.toRadians(angle1)) * bulletSpeed;
-                double velocityY1 = -Math.sin(Math.toRadians(angle1)) * bulletSpeed;
-                double velocityX2 = Math.cos(Math.toRadians(angle2)) * bulletSpeed;
-                double velocityY2 = -Math.sin(Math.toRadians(angle2)) * bulletSpeed;
-                bullets.add(new Bullet(x + width / 2 - 2.5, y, velocityX1, velocityY1, Color.YELLOW, screenWidth, screenHeight));
-                bullets.add(new Bullet(x + width / 2 - 2.5, y, velocityX, velocityY, Color.YELLOW, screenWidth, screenHeight));
-                bullets.add(new Bullet(x + width / 2 - 2.5, y, velocityX2, velocityY2, Color.YELLOW, screenWidth, screenHeight));
+                bullets.add(new Bullet(fireX, fireY, Math.cos(Math.toRadians(angle1)) * bulletSpeed, -Math.sin(Math.toRadians(angle1)) * bulletSpeed, Color.YELLOW, screenWidth, screenHeight));
+                bullets.add(new Bullet(fireX, fireY, velocityX, velocityY, Color.YELLOW, screenWidth, screenHeight));
+                bullets.add(new Bullet(fireX, fireY, Math.cos(Math.toRadians(angle2)) * bulletSpeed, -Math.sin(Math.toRadians(angle2)) * bulletSpeed, Color.YELLOW, screenWidth, screenHeight));
                 break;
             case LASER:
-                logger.info("Weapon type LASER");
-                // For now, laser will be a fast, long bullet
-                bullets.add(new Bullet(x + width / 2 - 1, y, velocityX * 2, velocityY * 2, Color.RED, 2, 100, screenWidth, screenHeight));
+                bullets.add(new Bullet(fireX, fireY, velocityX * 2, velocityY * 2, Color.RED, 2, 100, screenWidth, screenHeight));
                 break;
             case FIRE:
-                logger.info("Weapon type FIRE");
-                bullets.add(new Bullet(x + width / 2 - 5, y, velocityX, velocityY, Color.ORANGE, 10, 10, screenWidth, screenHeight));
+                bullets.add(new Bullet(fireX, fireY, velocityX, velocityY, Color.ORANGE, 10, 10, screenWidth, screenHeight));
                 break;
         }
+
         logger.debug("Player fired bullet: " + bullets.size());
         return bullets;
-
     }
+
 
     public void setAimAngle(double aimAngle) {
         this.aimAngle = aimAngle;

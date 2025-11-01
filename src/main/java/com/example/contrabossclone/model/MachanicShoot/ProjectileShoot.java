@@ -10,28 +10,13 @@ public class ProjectileShoot implements ShootingStrategy {
     private double gravity = 0.3; // Gravity effect for arc trajectory
     
     @Override
-    public List<Bullet> shoot(double x, double y, Player player, double screenWidth, double screenHeight) {
+    public List<Bullet> shoot(double x, double y, Player player, double screenWidth, double screenHeight, double bulletSpeed) {
         List<Bullet> bullets = new ArrayList<>();
         
-        // Calculate direction to player
-        double dx = player.getX() - x;
-        double dy = player.getY() - y;
-        double distance = Math.sqrt(dx * dx + dy * dy);
-        
-        // Normalize direction
-        double dirX = dx / distance;
-        double dirY = dy / distance;
-        
-        // Projectile speed
-        double speed = 8;
-        
-        // Launch at an upward angle to create arc trajectory
-        // Add upward velocity component for parabolic motion
-        double launchAngle = -30; // Launch 30 degrees upward from direction to player
-        double angleRad = Math.atan2(dirY, dirX) + Math.toRadians(launchAngle);
-        
-        double velocityX = Math.cos(angleRad) * speed;
-        double velocityY = Math.sin(angleRad) * speed;
+        // Fixed velocity to move straight to the left, using the provided bulletSpeed
+        // Negative speed for left movement
+        double velocityX = -Math.abs(bulletSpeed); 
+        double velocityY = 0;  // No vertical movement
         
         // Create projectile bullet with custom size for visibility
         ProjectileBullet projectile = new ProjectileBullet(x, y, velocityX, velocityY, 

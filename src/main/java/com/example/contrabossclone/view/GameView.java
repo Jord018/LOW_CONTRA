@@ -6,7 +6,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import com.example.contrabossclone.model.GameModel;
-import com.example.contrabossclone.model.Stage.Level;
 import com.example.contrabossclone.model.MachanicShoot.Bullet;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.image.Image;

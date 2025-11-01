@@ -18,16 +18,22 @@ public class Boss {
     private int health = 100;
     private double speed = 2;
     private int shootCooldown = 0;
+    private boolean allowShoot = true; // Default to true to maintain backward compatibility
     private Player player;
     private ShootingStrategy shootingStrategy;
 
     public Boss(double x, double y, double width, double height, Player player, ShootingStrategy shootingStrategy) {
+        this(x, y, width, height, player, shootingStrategy, true);
+    }
+    
+    public Boss(double x, double y, double width, double height, Player player, ShootingStrategy shootingStrategy, boolean allowShoot) {
         this.x = x;
         this.y = y;
         this.width = width;   // 👈 2.1 กำหนดค่า
         this.height = height; // 👈 2.2 กำหนดค่า
         this.player = player;
         this.shootingStrategy = shootingStrategy;
+        this.allowShoot = allowShoot;
     }
 
     public void update() {
@@ -36,12 +42,12 @@ public class Boss {
         }
     }
 
-    public List<Bullet> shoot(double screenWidth, double screenHeight) { // <--- เพิ่มพารามิเตอร์
-        if (shootCooldown <= 0) {
-            shootCooldown = 60;
-            return shootingStrategy.shoot(x + width / 2, y + height / 2, player, screenWidth, screenHeight); // <--- ส่งต่อ
+    public List<Bullet> shoot(double screenWidth, double screenHeight) {
+        if (!allowShoot || shootCooldown > 0) {
+            return new ArrayList<>();
         }
-        return new ArrayList<>();
+        shootCooldown = 60;
+        return shootingStrategy.shoot(x + width / 2, y + height / 2, player, screenWidth, screenHeight, 5);
     }
 
     public void render(GraphicsContext gc) {
@@ -63,9 +69,7 @@ public class Boss {
         gc.setFill(Color.web("#A9A9A9"));
         gc.fillRect(x, y + baseOffsetY, width, baseHeight);
 
-        // Gun
-        gc.setFill(Color.web("#696969"));
-        gc.fillRect(x + gunOffsetX, y, gunWidth, gunHeight);
+
 
         // Health bar
         gc.setFill(Color.WHITE);
@@ -115,5 +119,13 @@ public class Boss {
 
     public void setY(double y) {
         this.y = y;
+    }
+    
+    public boolean isAllowShoot() {
+        return allowShoot;
+    }
+    
+    public void setAllowShoot(boolean allowShoot) {
+        this.allowShoot = allowShoot;
     }
 }
