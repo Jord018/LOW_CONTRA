@@ -67,6 +67,12 @@ public class Player {
     private String currentState = "STAND";
     // ⭐️ --- สิ้นสุดตัวแปร Animation ---
 
+    // ⭐️ --- (1) เพิ่มตัวแปรสำหรับ Sprite กระสุน ---
+    private transient Image bulletSpriteSheet;
+    private Rectangle2D bulletFrame; // Frame สำหรับกระสุนปกติ
+    // (คุณสามารถเพิ่ม Frame สำหรับ Laser, Fire ได้ในอนาคต)
+    // ⭐️ --- สิ้นสุดตัวแปร Sprite กระสุน ---
+
     private int maxHealth = 100;
     private static final Logger logger = LogManager.getLogger(Player.class);
 
@@ -108,6 +114,20 @@ public class Player {
             System.err.println("โปรดตรวจสอบว่าไฟล์อยู่ในโฟลเดอร์ src/main/resources");
             this.spriteSheet = null;
         }
+
+        // ⭐️ --- (2) โหลด Sprite Sheet (Bullet) ---
+        try {
+            // ⭐️⭐️ (สำคัญ) แก้ Path และชื่อไฟล์ให้ถูกต้อง
+            this.bulletSpriteSheet = new Image(getClass().getResourceAsStream("/GameAssets/PlayerBullet.png"));
+            // ⭐️⭐️ (สำคัญ) แก้พิกัด Sprite Frame ของกระสุนให้ถูกต้อง
+            this.bulletFrame = new Rectangle2D(0, 0, 25, 25); // (sX, sY, sW, sH)
+
+        } catch (Exception e) {
+            System.err.println("!!! Error loading bullet sprite sheet: /GameAssets/PlayerBullet.png");
+            this.bulletSpriteSheet = null;
+        }
+        // ⭐️ --- สิ้นสุดการโหลด Sprite กระสุน ---
+
         initializeAnimations();
         // ⭐️ --- สิ้นสุดการโหลด ---
     }
@@ -455,23 +475,74 @@ public class Player {
         return fireCooldown <= 0;
     }
 
+    // ⭐️ --- (3) แก้ไขเมธอด shoot() ---
     public List<Bullet> shoot(double screenWidth, double screenHeight) {
         fireCooldown = fireRate;
         List<Bullet> bullets = new ArrayList<>();
         double bulletSpeed = 10;
 
         Rectangle2D hitbox = getBounds();
-        //แก้ตรงนี้
         // ปล่อยกระสุนจากกลางตัวละคร
         double fireX = hitbox.getMinX() + hitbox.getWidth() / 2;
         double fireY = isPressingDown
                 ? hitbox.getMinY() + hitbox.getHeight() * 0.6
                 : hitbox.getMinY() + hitbox.getHeight() * 0.4;
 
-        // ใช้ aimAngle ตรง ๆ ไม่ต้องปรับตาม facingRight
         double velocityX = Math.cos(Math.toRadians(aimAngle)) * bulletSpeed;
         double velocityY = -Math.sin(Math.toRadians(aimAngle)) * bulletSpeed;
 
+        // ⭐️ (A) กำหนดขนาดกระสุน
+        double bulletWidth = 10;
+        double bulletHeight = 10;
+
+        // ⭐️ (B) เช็คว่า Sprite โหลดสำเร็จหรือไม่
+        if (bulletSpriteSheet == null || bulletFrame == null) {
+            logger.warn("Bullet sprite not loaded! Using fallback color.");
+            // ถ้าโหลดไม่สำเร็จ, กลับไปใช้โค้ดเดิมที่ใช้ Color (Fallback)
+            return shootFallback(screenWidth, screenHeight, fireX, fireY, velocityX, velocityY, bulletSpeed);
+        }
+
+        switch (weaponType) {
+            case NORMAL:
+            case MACHINE_GUN:
+                // ⭐️ (C) เรียก Constructor ตัวใหม่ (แบบ Sprite)
+                bullets.add(new Bullet(fireX, fireY, velocityX, velocityY,
+                        bulletSpriteSheet, bulletFrame,
+                        bulletWidth, bulletHeight,
+                        screenWidth, screenHeight));
+                break;
+            case SPREAD_GUN:
+                bullets.add(new Bullet(fireX, fireY, Math.cos(Math.toRadians(aimAngle - 15)) * bulletSpeed, -Math.sin(Math.toRadians(aimAngle - 15)) * bulletSpeed,
+                        bulletSpriteSheet, bulletFrame, bulletWidth, bulletHeight, screenWidth, screenHeight));
+                bullets.add(new Bullet(fireX, fireY, velocityX, velocityY,
+                        bulletSpriteSheet, bulletFrame, bulletWidth, bulletHeight, screenWidth, screenHeight));
+                bullets.add(new Bullet(fireX, fireY, Math.cos(Math.toRadians(aimAngle + 15)) * bulletSpeed, -Math.sin(Math.toRadians(aimAngle + 15)) * bulletSpeed,
+                        bulletSpriteSheet, bulletFrame, bulletWidth, bulletHeight, screenWidth, screenHeight));
+                break;
+            case LASER:
+                // ⭐️ (D) เราสามารถใช้ Sprite + ขนาดที่กำหนดเองได้
+                // (คุณอาจจะต้องสร้าง laserFrame แยกต่างหากใน Constructor)
+                bullets.add(new Bullet(fireX, fireY, velocityX * 2, velocityY * 2,
+                        bulletSpriteSheet, bulletFrame, // ⭐️ (ควรใช้ laserFrame)
+                        2, 100, // ขนาด Laser
+                        screenWidth, screenHeight));
+                break;
+            case FIRE:
+                // ⭐️ (D)
+                bullets.add(new Bullet(fireX, fireY, velocityX, velocityY,
+                        bulletSpriteSheet, bulletFrame, // ⭐️ (ควรใช้ fireFrame)
+                        10, 10, // ขนาด Fire
+                        screenWidth, screenHeight));
+                break;
+        }
+
+        logger.debug("Player fired bullet: " + bullets.size());
+        return bullets;
+    }
+
+    // ⭐️ เมธอดสำรอง: ถ้า Sprite โหลดไม่ขึ้น ให้กลับไปยิงกระสุนสี
+    private List<Bullet> shootFallback(double screenWidth, double screenHeight, double fireX, double fireY, double velocityX, double velocityY, double bulletSpeed) {
+        List<Bullet> bullets = new ArrayList<>();
         switch (weaponType) {
             case NORMAL:
             case MACHINE_GUN:
@@ -489,12 +560,9 @@ public class Player {
                 bullets.add(new Bullet(fireX, fireY, velocityX, velocityY, Color.ORANGE, 10, 10, screenWidth, screenHeight));
                 break;
         }
-
-        logger.debug("Player fired bullet: " + bullets.size());
         return bullets;
     }
-
-
+    // ⭐️ --- สิ้นสุดการแก้ไข shoot() ---
 
     public void setAimAngle(double aimAngle) {
         this.aimAngle = aimAngle;
@@ -530,13 +598,6 @@ public class Player {
 
         return new Rectangle2D(leftX, adjustedY, w, h);
     }
-
-
-
-
-
-
-
 
     public void hit() {
         if (!isInvincible) {
