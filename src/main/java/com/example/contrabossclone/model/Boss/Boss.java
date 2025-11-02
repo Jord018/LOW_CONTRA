@@ -18,7 +18,7 @@ public class Boss {
     private int health = 100;
     private double speed = 2;
     private int shootCooldown = 0;
-    private boolean allowShoot = true; // Default to true to maintain backward compatibility
+    private boolean allowShoot = true;
     private Player player;
     private ShootingStrategy shootingStrategy;
 
@@ -29,8 +29,8 @@ public class Boss {
     public Boss(double x, double y, double width, double height, Player player, ShootingStrategy shootingStrategy, boolean allowShoot) {
         this.x = x;
         this.y = y;
-        this.width = width;   // 👈 2.1 กำหนดค่า
-        this.height = height; // 👈 2.2 กำหนดค่า
+        this.width = width;
+        this.height = height;
         this.player = player;
         this.shootingStrategy = shootingStrategy;
         this.allowShoot = allowShoot;
@@ -52,16 +52,16 @@ public class Boss {
 
     public void render(GraphicsContext gc) {
 
-        // --- คำนวณสัดส่วน ---
-        double baseHeight = height * 0.8;   // ฐานสูง 80%
-        double baseOffsetY = height * 0.2;  // ฐานขยับลงมา 20%
 
-        double gunWidth = width * 0.2;      // ปืนกว้าง 20%
-        double gunHeight = height * 0.4;    // ปืนสูง 40%
-        double gunOffsetX = (width - gunWidth) / 2; // ให้ปืนอยู่ตรงกลาง
+        double baseHeight = height * 0.8;
+        double baseOffsetY = height * 0.2;
 
-        double healthBarHeight = 10;      // ให้หลอดเลือดสูง 10px คงที่
-        double healthBarOffsetY = 20;     // ให้หลอดเลือดอยู่เหนือหัว 20px
+        double gunWidth = width * 0.2;
+        double gunHeight = height * 0.4;
+        double gunOffsetX = (width - gunWidth) / 2;
+
+        double healthBarHeight = 10;
+        double healthBarOffsetY = 20;
 
         // --- วาด ---
 

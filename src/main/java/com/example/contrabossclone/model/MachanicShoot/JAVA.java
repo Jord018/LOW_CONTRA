@@ -17,8 +17,7 @@ public class JAVA implements ShootingStrategy {
 
         List<Bullet> bullets = new ArrayList<>();
 
-        // 🔸 ยิงสุ่มมุม (ทุกทิศได้ แต่เน้นลงล่าง)
-        double angleDeg = 90 + (random.nextDouble() * 180 - 90); // ยิงลงกว้าง ๆ
+        double angleDeg = 90 + (random.nextDouble() * 180 - 90);
         double angle = Math.toRadians(angleDeg);
 
         double vx = Math.cos(angle) * bulletSpeed;
@@ -40,8 +39,8 @@ public class JAVA implements ShootingStrategy {
         private double angle;
         private double speed;
         private double changeTimer = 0;
-        private double targetAngle; // มุมปลายทางที่สุ่มเปลี่ยน
-        private double rotationSpeed = Math.toRadians(1.5); // ความเร็วการหมุน (โค้งนุ่ม)
+        private double targetAngle;
+        private double rotationSpeed = Math.toRadians(1.5);
 
         public FloatingBullet(double x, double y, double velocityX, double velocityY,
                               Color color, double screenWidth, double screenHeight) {
@@ -52,34 +51,27 @@ public class JAVA implements ShootingStrategy {
         }
 
         public void update(double deltaTime) {
-            // นับเวลาเพื่อเปลี่ยนทิศ
             changeTimer += deltaTime;
 
-            // 🔹 ทุก ๆ 0.5-1.5 วิ เปลี่ยนมุมปลายทางแบบสุ่ม
             if (changeTimer > 0.5 + rand.nextDouble()) {
                 changeTimer = 0;
-                // สุ่มมุมใหม่ในช่วง ±90° จากทิศปัจจุบัน
                 targetAngle = angle + Math.toRadians(rand.nextDouble() * 180 - 90);
             }
 
-            // 🔹 ค่อยๆ หมุนมุมเข้าหา targetAngle (smooth turn)
             double diff = targetAngle - angle;
-            diff = Math.atan2(Math.sin(diff), Math.cos(diff)); // normalize -π ถึง π
+            diff = Math.atan2(Math.sin(diff), Math.cos(diff));
 
             if (diff > rotationSpeed) diff = rotationSpeed;
             if (diff < -rotationSpeed) diff = -rotationSpeed;
 
             angle += diff;
 
-            // 🔹 อัปเดตความเร็วตามมุมใหม่
             setVelocityX(Math.cos(angle) * speed);
             setVelocityY(Math.sin(angle) * speed);
 
-            // 🔹 เคลื่อนที่
             setX(getX() + getVelocityX() * deltaTime);
             setY(getY() + getVelocityY() * deltaTime);
 
-            // 🔹 ถ้าออกนอกขอบ – เด้งกลับ
             if (getX() < 0 || getX() > 1280) {
                 setVelocityX(-getVelocityX());
                 angle = Math.atan2(getVelocityY(), getVelocityX());

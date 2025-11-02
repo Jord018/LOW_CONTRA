@@ -53,7 +53,6 @@ public class GameController {
         } else if (left && up) {
             player.setAimAngle(135);
         } else {
-            // Default angle when no directional input - shoot right
             player.setAimAngle(player.isFacingRight() ? 0 : 180);
         }
 
