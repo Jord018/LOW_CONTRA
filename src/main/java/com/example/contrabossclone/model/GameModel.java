@@ -169,8 +169,15 @@ public class GameModel {
         bosses.add(new ThirdBoss(50, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame),2));
 
         List<Enemy> enemies = new ArrayList<>();
+        enemies.add(new Enemy(300,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame,1));
+        enemies.add(new Enemy(400,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame,1));
+        enemies.add(new Enemy(500,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame,1));
+        enemies.add(new Enemy(600,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame,1));
+        enemies.add(new Enemy(700,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame,1));
+        enemies.add(new Enemy(800,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame,1));
 
-        levels.add(new Level(bosses, enemies, platforms, powerUps, "/GameAssets/MapBossJava.png", 2400, 10, 350, 210, height - 100,10, 10));
+
+        levels.add(new Level(bosses, enemies, platforms, powerUps, "/GameAssets/MapBossJava.png", 2400, 10, 350, 210, height - 100,300, 300));
     }
 
 
