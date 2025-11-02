@@ -26,7 +26,11 @@ public class Level {
 
     private double groundLevel;
 
-    public Level(List<Boss> bosses,List<Enemy> enemies, List<Platform> platforms, List<PowerUp> powerUps, String backgroundImagePath, double groundLevel) {
+    private double startX;
+    private double startY;
+
+    public Level(List<Boss> bosses,List<Enemy> enemies, List<Platform> platforms, List<PowerUp> powerUps, String backgroundImagePath,
+                 double groundLevel, double startX, double startY) {
         this.bosses = bosses;
         this.enemies = enemies;
         this.platforms = platforms;
@@ -38,13 +42,16 @@ public class Level {
             this.backgroundImage = null;
         }
         this.groundLevel = groundLevel;
+        this.startX = startX;
+        this.startY = startY;
         this.doCrop = false;
     }
 
     public Level(List<Boss> bosses, List<Enemy> enemies, List<Platform> platforms, List<PowerUp> powerUps, String backgroundImagePath,
-                 double sourceX, double sourceY, double sourceWidth, double sourceHeight, double groundLevel) {
+                 double sourceX, double sourceY, double sourceWidth, double sourceHeight,
+                 double groundLevel, double startX, double startY) {
 
-        this(bosses, enemies, platforms, powerUps, backgroundImagePath, groundLevel);
+        this(bosses, enemies, platforms, powerUps, backgroundImagePath, groundLevel, startX, startY);
 
         this.sourceX = sourceX;
         this.sourceY = sourceY;
@@ -73,9 +80,11 @@ public class Level {
         for (Boss boss : bosses) {
             boss.render(gc);
         }
-        for (Platform platform : platforms) {
-            platform.render(gc);
-        }
+
+//        for (Platform platform : platforms) {
+//            platform.render(gc);
+//        }
+
         for (PowerUp powerUp : powerUps) {
             powerUp.render(gc);
         }
@@ -84,6 +93,13 @@ public class Level {
                 enemy.render(gc);
             }
         }
+    }
+
+    public double getStartX() {
+        return startX;
+    }
+    public double getStartY() {
+        return startY;
     }
 
     public double getGroundLevel() {

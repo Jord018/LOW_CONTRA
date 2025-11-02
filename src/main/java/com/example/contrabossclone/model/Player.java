@@ -7,7 +7,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.impl.Log4jLogEvent;
 
 import javafx.scene.image.Image;
 import java.util.HashMap;
@@ -51,36 +50,15 @@ public class Player {
 
     private double speed = 2;
     private double dx = 0;
-
-    public double getVelocityY() {
-        return velocityY;
-    }
-
-    public void setVelocityY(double velocityY) {
-        this.velocityY = velocityY;
-    }
-
     private double velocityY = 0;
     private double gravity = 0.15;
-
-    public boolean isOnGround() {
-        return onGround;
-    }
-
-    public void setOnGround(boolean onGround) {
-        this.onGround = onGround;
-    }
-
     private boolean onGround = false;
     private boolean isPressingDown = false;
+    private double aimAngle = 90.0;
 
-    public double getAimAngle() {
-        return aimAngle;
-    }
+    private boolean onSolidPlatform = false;
 
-    private double aimAngle = 0.0;
-
-    private transient Image spriteSheet;
+    private transient Image spriteSheet; // Sprite ของ Player
     private Map<String, Rectangle2D[]> animations;
     private int animationFrame = 0;
     private int animationTick = 0;
@@ -89,31 +67,12 @@ public class Player {
     private String currentState = "STAND";
 
     private transient Image bulletSpriteSheet;
-    private Rectangle2D bulletFrame;
+    private Rectangle2D bulletFrame; // Frame สำหรับกระสุนปกติ
 
     private int maxHealth = 100;
     private static final Logger logger = LogManager.getLogger(Player.class);
-
-    public int getScore() {
-        logger.info("Player score: " + score);
-        return score;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
-    }
-
     private int score = 0;
     private int health = maxHealth;
-
-    public void setLives(int lives) {
-        this.lives = lives;
-    }
-
-    public WeaponType getWeaponType() {
-        return weaponType;
-    }
-
     private int lives = 3;
     private int fireRate = 30;
     private int fireCooldown = 0;
@@ -121,24 +80,23 @@ public class Player {
     private int invincibilityTimer = 0;
     private double respawnX, respawnY;
 
+
     public Player(double x, double y) {
         this.x = x;
         this.y = y;
-        this.respawnX = x;
+        this.respawnX = 10;
         this.respawnY = 10;
 
         try {
             this.spriteSheet = new Image(getClass().getResourceAsStream("/GameAssets/Character2.png"));
         } catch (Exception e) {
-            System.err.println("!!! Error loading sprite sheet: /Characters.png");
-            System.err.println("โปรดตรวจสอบว่าไฟล์อยู่ในโฟลเดอร์ src/main/resources");
+            System.err.println("!!! Error loading sprite sheet: /GameAssets/Character2.png");
             this.spriteSheet = null;
         }
 
         try {
             this.bulletSpriteSheet = new Image(getClass().getResourceAsStream("/GameAssets/PlayerBullet.png"));
             this.bulletFrame = new Rectangle2D(0, 0, 25, 25); // (sX, sY, sW, sH)
-
         } catch (Exception e) {
             System.err.println("!!! Error loading bullet sprite sheet: /GameAssets/PlayerBullet.png");
             this.bulletSpriteSheet = null;
@@ -225,8 +183,8 @@ public class Player {
                 new Rectangle2D(128, 384, 128, 128),
                 new Rectangle2D(256, 384, 128, 128)
         });
+
         animations.put("RUN_AIM_DOWN_R", new Rectangle2D[] {
-                //แก้ตรงนี้
                 new Rectangle2D(384, 384, 128, 128),
                 new Rectangle2D(512, 384, 128, 128),
                 new Rectangle2D(640, 384, 128, 128),
@@ -262,10 +220,10 @@ public class Player {
         logger.debug("Player stopped - Position: (x: {}, y: {})", x, y);
     }
 
+
     public void jump() {
         if (onGround) {
-            if (isPressingDown) {
-                // Fall through platform
+            if (isPressingDown && !onSolidPlatform) {
                 y += 1;
                 logger.debug("Player fell through platform at (x: {}, y: {})", x, y);
             } else {
@@ -273,6 +231,7 @@ public class Player {
                 logger.debug("Player jumped from position (x: {}, y: {})", x, y);
             }
             onGround = false;
+            onSolidPlatform = false;
         } else {
             logger.debug("Jump attempted but player is not on ground");
         }
@@ -303,9 +262,10 @@ public class Player {
         y += velocityY;
 
         onGround = false;
+        onSolidPlatform = false;
 
         // Check for ground collision
-        if (getBounds().getMaxY() > screenHeight) { // ⭐️ ปรับเล็กน้อย
+        if (getBounds().getMaxY() > screenHeight) {
             y = screenHeight - getBounds().getHeight();
             if (isPressingDown) {
                 y = screenHeight - PRONE_HEIGHT;
@@ -315,28 +275,48 @@ public class Player {
 
             velocityY = 0;
             onGround = true;
+            onSolidPlatform = true;
             logger.info("Player landed on ground");
         }
 
         // Check for platform collisions
         for (Platform platform : platforms) {
-            if (getBounds().intersects(platform.getBounds())) {
-                if (velocityY > 0 && getBounds().getMaxY() - velocityY <= platform.getY()) {
+            Rectangle2D playerBounds = getBounds();
+            Rectangle2D platformBounds = platform.getBounds();
 
-                    if (isPressingDown) {
-                        y = platform.getY() - PRONE_HEIGHT;
-                    } else {
-                        y = platform.getY() - height;
-                    }
+            if (playerBounds.intersects(platformBounds)) {
 
+                if (velocityY > 0 && (playerBounds.getMaxY() - velocityY) <= platformBounds.getMinY()) {
+                    y = platformBounds.getMinY() - playerBounds.getHeight();
                     velocityY = 0;
                     onGround = true;
+
+                    if (platform.isSolid()) {
+                        this.onSolidPlatform = true;
+                    }
+
                     logger.info("Player landed on platform");
+                }
+
+                else if (platform.isSolid() && velocityY < 0 && (playerBounds.getMinY() - velocityY) >= platformBounds.getMaxY()) {
+                    y = platformBounds.getMaxY();
+                    velocityY = 0;
+                }
+
+                else if (platform.isSolid()) {
+                    if (dx > 0 && (playerBounds.getMaxX() - dx) <= platformBounds.getMinX()) {
+                        x = platformBounds.getMinX() - playerBounds.getWidth();
+                        dx = 0;
+                    }
+                    else if (dx < 0 && (playerBounds.getMinX() - dx) >= platformBounds.getMaxX()) {
+                        x = platformBounds.getMaxX();
+                        dx = 0;
+                    }
                 }
             }
         }
 
-
+        //Animation state logic
         String newState = "STAND";
         if (isPressingDown) {
             if (dx > 0) {
@@ -350,7 +330,6 @@ public class Player {
                 aimAngle = 270;
             }
         }
-
         else if (!onGround) {
             newState = "JUMP";
         } else if (dx != 0) {
@@ -374,7 +353,6 @@ public class Player {
             animationFrame = 0;
             animationTick = 0;
         } else {
-            // ถ้าท่าเดิม ให้ขยับ Frame
             animationTick++;
             if (animationTick >= animationSpeed) {
                 animationTick = 0;
@@ -419,7 +397,6 @@ public class Player {
 
         if (frames == null) { renderFallback(gc); return; }
 
-        // 2. หา Frame ปัจจุบัน
         if (animationFrame >= frames.length) animationFrame = 0;
         Rectangle2D frame = frames[animationFrame];
 
@@ -466,7 +443,7 @@ public class Player {
     public List<Bullet> shoot(double screenWidth, double screenHeight) {
         fireCooldown = fireRate;
         logger.info("Player fired {} shot at angle {}° - Position: (x: {}, y: {})",
-            weaponType, aimAngle, x, y);
+                weaponType, aimAngle, x, y);
         List<Bullet> bullets = new ArrayList<>();
         double bulletSpeed = 10;
 
@@ -636,5 +613,28 @@ public class Player {
     }
     public boolean isFacingRight() {return facingRight;}
 
+    public boolean isOnSolidPlatform() {
+        return onSolidPlatform;
+    }
 
+    public boolean isOnGround() {
+        return onGround;
+    }
+
+    public void setOnGround(boolean onGround) {
+        this.onGround = onGround;
+    }
+
+    public double getAimAngle() {
+        return aimAngle;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int i) {
+        this.score = score;
+    }
 }
+

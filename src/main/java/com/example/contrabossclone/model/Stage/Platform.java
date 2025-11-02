@@ -10,20 +10,44 @@ public class Platform {
     private double x, y;
     private double width, height;
 
+
+    private boolean isSolid;
+
+
     public Platform(double x, double y, double width, double height) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
+        this.isSolid = false;
     }
 
+    public Platform(double x, double y, double width, double height, boolean isSolid) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.isSolid = isSolid;
+    }
+
+/*
     public void render(GraphicsContext gc) {
-        gc.setFill(Color.GRAY);
+
+        if (isSolid) {
+            gc.setFill(Color.DARKSLATEGRAY);
+        } else {
+            gc.setFill(Color.GRAY);
+        }
         gc.fillRect(x, y, width, height);
     }
+*/
 
     public Rectangle2D getBounds() {
         return new Rectangle2D(x, y, width, height);
+    }
+
+    public boolean isSolid() {
+        return isSolid;
     }
 
     public double getX() {
@@ -50,3 +74,4 @@ public class Platform {
         this.y = y;
     }
 }
+
