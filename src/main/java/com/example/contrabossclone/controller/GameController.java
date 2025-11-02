@@ -5,21 +5,61 @@ import com.example.contrabossclone.model.Player;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class GameController {
 
     private GameModel model;
     private Set<KeyCode> activeKeys = new HashSet<>();
-
+    private List<KeyCode> contraSequence = new ArrayList<>();
+    private final KeyCode[] CONTRA_CODE = {
+            KeyCode.UP, KeyCode.UP,
+            KeyCode.DOWN, KeyCode.DOWN,
+            KeyCode.LEFT, KeyCode.RIGHT,
+            KeyCode.LEFT, KeyCode.RIGHT,
+            KeyCode.B, KeyCode.A
+    };
     public GameController(GameModel model, Scene scene) {
         this.model = model;
 
-        scene.setOnKeyPressed(e -> activeKeys.add(e.getCode()));
+        scene.setOnKeyPressed(e -> {
+            activeKeys.add(e.getCode());
+            checkContraCode(e.getCode());
+        });
+
         scene.setOnKeyReleased(e -> activeKeys.remove(e.getCode()));
     }
+    private void checkContraCode(KeyCode key) {
+        // เพิ่ม key ล่าสุดเข้า sequence
+        contraSequence.add(key);
 
+        // ตรวจสอบ sequence ว่ายังตรงกับรหัส Contra
+        if (contraSequence.size() > CONTRA_CODE.length) {
+            contraSequence.remove(0); // ลบตัวเก่าที่เกิน
+        }
+
+        // ตรวจสอบว่า sequence ถูกต้องหรือไม่
+        boolean matched = true;
+        for (int i = 0; i < contraSequence.size(); i++) {
+            if (contraSequence.get(i) != CONTRA_CODE[i]) {
+                matched = false;
+                break;
+            }
+        }
+
+        if (matched && contraSequence.size() == CONTRA_CODE.length) {
+            activateContraCheat();
+            contraSequence.clear(); // รีเซ็ตหลังใช้งาน
+        }
+    }
+    private void activateContraCheat() {
+        System.out.println("CONTRA CHEAT ACTIVATED!");
+        model.getPlayer().setLives(100); // ตัวอย่างเพิ่มชีวิต
+
+    }
     public void handleInput() {
         if (model.isGameOver()) return;
 
@@ -66,7 +106,7 @@ public class GameController {
             }
         }
 
-        if (down && player.isOnGround() && !left && !right && !up) {
+        if (down && player.isOnGround()) {
             player.setPressingDown(true);
         } else {
             player.setPressingDown(false);

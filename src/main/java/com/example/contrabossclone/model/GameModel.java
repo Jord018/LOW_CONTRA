@@ -94,9 +94,9 @@ public class GameModel {
         }
 
         // Initialize all stages
-        initializeStage1();
+//        initializeStage1();
         initializeStage2();
-        initializeStage3();
+//        initializeStage3();
 
         if (!levels.isEmpty()) {
             Level startLevel = levels.get(0);
@@ -198,6 +198,7 @@ public class GameModel {
             boss.update();
         }
 
+        // Update Enemies
         for (Enemy enemy : currentLevel.getEnemies()) {
             enemy.update(currentLevel.getPlatforms(), currentLevel.getGroundLevel());
 
@@ -210,21 +211,14 @@ public class GameModel {
             }
         }
 
+        // Collision: Enemy vs Player
         for (Enemy enemy : currentLevel.getEnemies()) {
-            if(enemy.isAlive() && enemy.getBounds().intersects(player.getBounds())) {
+            if (enemy.isAlive() && enemy.getBounds().intersects(player.getBounds())) {
                 player.hit();
-            };
-        }
-
-        // Boss shooting
-        for (Boss boss : currentLevel.getBosses()) {
-            List<Bullet> newBossBullets = boss.shoot(width, height);
-            if (newBossBullets != null && !newBossBullets.isEmpty()) {
-                bossBullets.addAll(newBossBullets);
             }
         }
 
-        // Update player bullets
+        // Update Player bullets
         List<Bullet> playerBulletsToRemove = new ArrayList<>();
         for (Bullet bullet : playerBullets) {
             bullet.update();
@@ -234,7 +228,7 @@ public class GameModel {
         }
         playerBullets.removeAll(playerBulletsToRemove);
 
-        // Update enemy bullets
+        // Update Enemy bullets
         List<Bullet> enemyBulletsToRemove = new ArrayList<>();
         for (Bullet bullet : enemyBullets) {
             bullet.update();
@@ -244,9 +238,7 @@ public class GameModel {
         }
         enemyBullets.removeAll(enemyBulletsToRemove);
 
-
-        // Collision detection: player Bullet vs enemy
-        // Update boss bullets
+        // Update Boss bullets
         List<Bullet> bossBulletsToRemove = new ArrayList<>();
         for (Bullet bullet : bossBullets) {
             bullet.update();
@@ -256,12 +248,13 @@ public class GameModel {
         }
         bossBullets.removeAll(bossBulletsToRemove);
 
+        boolean enemiesCleared = currentLevel.getEnemies().isEmpty(); // ✅ เช็ค Enemy หมดแล้ว
+
+        // Collision: Player bullets vs Enemy
         List<Enemy> enemiesToRemove = new ArrayList<>();
         for (Bullet bullet : playerBullets) {
             for (Enemy enemy : currentLevel.getEnemies()) {
-
                 if (enemy.isAlive() && !bullet.isExploding() && bullet.getBounds().intersects(enemy.getBounds())) {
-                    System.out.println("Player hit enemy at ({}, {})" + enemy.getX() + enemy.getY());
                     enemy.die();
                     bullet.explode();
                     enemiesToRemove.add(enemy);
@@ -271,7 +264,7 @@ public class GameModel {
         }
         currentLevel.getEnemies().removeAll(enemiesToRemove);
 
-        // Collision detection: enemy bullets vs player
+        // Collision: Enemy bullets vs Player
         for (Bullet bullet : enemyBullets) {
             if (!bullet.isExploding() && bullet.getBounds().intersects(player.getBounds())) {
                 player.hit();
@@ -280,18 +273,29 @@ public class GameModel {
             }
         }
 
-        // Collision detection: player bullets vs boss
-        for (Bullet bullet : playerBullets) {
+        // Collision & shooting: Boss (ทำงานก็ต่อเมื่อ Enemy หมดแล้ว)
+        if (enemiesCleared) {
+            // Boss shooting
             for (Boss boss : currentLevel.getBosses()) {
-                if (!bullet.isExploding() && bullet.getBounds().intersects(boss.getBounds())) {
-                    boss.hit();
-                    bullet.explode();
+                List<Bullet> newBossBullets = boss.shoot(width, height);
+                if (newBossBullets != null && !newBossBullets.isEmpty()) {
+                    bossBullets.addAll(newBossBullets);
+                }
+            }
+
+            // Collision: Player bullets vs Boss
+            for (Bullet bullet : playerBullets) {
+                for (Boss boss : currentLevel.getBosses()) {
+                    if (!bullet.isExploding() && bullet.getBounds().intersects(boss.getBounds())) {
+                        boss.hit();
+                        bullet.explode();
+                    }
                 }
             }
         }
         playerBullets.removeAll(playerBulletsToRemove);
 
-        // Collision detection: boss bullets vs player
+        // Collision: Boss bullets vs Player
         for (Bullet bullet : bossBullets) {
             if (!bullet.isExploding() && bullet.getBounds().intersects(player.getBounds())) {
                 player.hit();
@@ -299,38 +303,25 @@ public class GameModel {
             }
         }
 
-        // Collision detection: player vs boss bodies
-        for (Boss boss : currentLevel.getBosses()) {
-            if (boss.getBounds().intersects(player.getBounds())) {
-                player.hit();
+        // Collision: Player vs Boss bodies
+        if (enemiesCleared) {
+            for (Boss boss : currentLevel.getBosses()) {
+                if (boss.getBounds().intersects(player.getBounds())) {
+                    player.hit();
+                }
             }
         }
-        // Collision detection: player vs enemy
-        for (Enemy enemy : currentLevel.getEnemies()) {
-            if(enemy.getBounds().intersects(player.getBounds())) {
-                player.hit();
-            };
-        }
-        // Collision detection: player vs power-ups
+
+        // Collision: Player vs PowerUps
         List<PowerUp> powerUpsToRemove = new ArrayList<>();
         for (PowerUp powerUp : currentLevel.getPowerUps()) {
             if (player.getBounds().intersects(powerUp.getBounds())) {
                 switch (powerUp.getType()) {
-                    case BARRIER:
-                        player.activateBarrier();
-                        break;
-                    case MACHINE_GUN:
-                        player.setWeaponType(Player.WeaponType.MACHINE_GUN);
-                        break;
-                    case SPREAD_GUN:
-                        player.setWeaponType(Player.WeaponType.SPREAD_GUN);
-                        break;
-                    case LASER:
-                        player.setWeaponType(Player.WeaponType.LASER);
-                        break;
-                    case FIRE:
-                        player.setWeaponType(Player.WeaponType.FIRE);
-                        break;
+                    case BARRIER -> player.activateBarrier();
+                    case MACHINE_GUN -> player.setWeaponType(Player.WeaponType.MACHINE_GUN);
+                    case SPREAD_GUN -> player.setWeaponType(Player.WeaponType.SPREAD_GUN);
+                    case LASER -> player.setWeaponType(Player.WeaponType.LASER);
+                    case FIRE -> player.setWeaponType(Player.WeaponType.FIRE);
                 }
                 powerUpsToRemove.add(powerUp);
             }
@@ -341,23 +332,31 @@ public class GameModel {
         currentLevel.getBosses().removeIf(Boss::isDefeated);
 
         if (currentLevel.getBosses().isEmpty() && currentLevel.getEnemies().isEmpty()) {
-            player.setScore(player.getScore() + 1);
-            if (currentLevelIndex < levels.size() - 1) {
-                currentLevelIndex++;
-                currentStage = currentLevelIndex + 1; // Update stage number
-                player.setX(width / 2 - 25);
-                player.setY(height - 50);
-            } else {
-                gameOver = true;
-                gameOverMessage = "You Win! All 3 Stages Completed!" + player.getScore();
+            if (enemiesCleared) {
+                currentLevel.getBosses().removeIf(Boss::isDefeated);
             }
-        }
 
-        if (player.getLives() <= 0) {
-            gameOver = true;
-            gameOverMessage = "Game Over";
-        }
+            // Score Update & Stage Progression
+            if (enemiesCleared && currentLevel.getBosses().isEmpty()) {
+                player.setScore(player.getScore() + 1);
+                if (currentLevelIndex < levels.size() - 1) {
+                    currentLevelIndex++;
+                    currentStage = currentLevelIndex + 1;
+                    player.setX(width / 2 - 25);
+                    player.setY(height - 50);
+                } else {
+                    gameOver = true;
+                    gameOverMessage = "You Win! All Stages Completed! Score: " + player.getScore();
+                }
+            }
 
+            // Check Game Over
+            if (player.getLives() <= 0) {
+                gameOver = true;
+                gameOverMessage = "Game Over";
+            }
+
+        }
     }
 
     public void resize(double newWidth, double newHeight) {
