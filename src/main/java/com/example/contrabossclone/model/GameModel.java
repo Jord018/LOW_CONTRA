@@ -13,9 +13,10 @@ import com.example.contrabossclone.model.Stage.Level;
 import com.example.contrabossclone.model.Stage.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GameModel {
 
@@ -36,6 +37,10 @@ public class GameModel {
     private transient Image bossBulletSheet;
     private transient Image bossJavaBulletSheet;
     private Rectangle2D bossBulletFrame;
+    private Rectangle2D bossJavaBulletFrame;
+
+    private transient Image powerUpSpriteSheet;
+    private Map<PowerUp.PowerUpType, Rectangle2D> powerUpFrames;
 
     private boolean gameOver = false;
     private String gameOverMessage = "";
@@ -58,14 +63,41 @@ public class GameModel {
 
         try {
             this.bossJavaBulletSheet = new Image(getClass().getResourceAsStream("/GameAssets/BossJavaBullet.png"));
-            this.bossBulletFrame = new Rectangle2D(0, 0, 93.75, 93.75); // (sX, sY, sW, sH)
+            this.bossJavaBulletFrame = new Rectangle2D(0, 0, 93.75, 93.75); // (sX, sY, sW, sH)
         } catch (Exception e) {
             System.err.println("!!! Error loading boss bullet sprite!");
-            this.bossBulletSheet = null;
+            this.bossJavaBulletSheet = null;
+        }
+
+        this.powerUpFrames = new HashMap<>();
+        try {
+            this.powerUpSpriteSheet = new Image(getClass().getResourceAsStream("/GameAssets/SpecialGun.png"));
+            powerUpFrames.put(PowerUp.PowerUpType.MACHINE_GUN, new Rectangle2D(0, 0, 32, 32));
+            powerUpFrames.put(PowerUp.PowerUpType.BARRIER, new Rectangle2D(32, 0, 32, 32));
+            powerUpFrames.put(PowerUp.PowerUpType.SPREAD_GUN, new Rectangle2D(64, 0, 32, 32));
+            powerUpFrames.put(PowerUp.PowerUpType.LASER, new Rectangle2D(96, 0, 32, 32));
+            powerUpFrames.put(PowerUp.PowerUpType.FIRE, new Rectangle2D(128, 0, 32, 32));
+
+        } catch (Exception e) {
+            System.err.println("!!! Error loading PowerUp sprite sheet!");
+            this.powerUpSpriteSheet = null;
+        }
+
+        try {
+            Image explosionSheet = new Image(getClass().getResourceAsStream("/GameAssets/BulletExplode.png"));
+
+            Rectangle2D[] frames = new Rectangle2D[] {
+                    new Rectangle2D(0, 0, 279, 283)
+            };
+
+            Bullet.loadExplosionSprite(explosionSheet, frames);
+
+        } catch (Exception e) {
+            System.err.println("!!! Error loading Explosion sprite sheet!");
         }
 
         // Initialize all stages
-//        initializeStage1();
+        initializeStage1();
         initializeStage2();
         initializeStage3();
 
@@ -82,11 +114,12 @@ public class GameModel {
         platforms.add(new Platform(330, 460, 70, 20));
 
         List<PowerUp> powerUps = new ArrayList<>();
-        powerUps.add(new PowerUp(100, 300, PowerUp.PowerUpType.MACHINE_GUN));
-        powerUps.add(new PowerUp(200, 300, PowerUp.PowerUpType.BARRIER));
-        powerUps.add(new PowerUp(300, 300, PowerUp.PowerUpType.SPREAD_GUN));
-        powerUps.add(new PowerUp(400, 300, PowerUp.PowerUpType.LASER));
-        powerUps.add(new PowerUp(500, 300, PowerUp.PowerUpType.FIRE));
+        double itemWidth = 32, itemHeight = 32;
+        powerUps.add(new PowerUp(100, 300, PowerUp.PowerUpType.MACHINE_GUN, powerUpSpriteSheet, powerUpFrames.get(PowerUp.PowerUpType.MACHINE_GUN), itemWidth, itemHeight));
+        powerUps.add(new PowerUp(200, 300, PowerUp.PowerUpType.BARRIER, powerUpSpriteSheet, powerUpFrames.get(PowerUp.PowerUpType.BARRIER), itemWidth, itemHeight));
+        powerUps.add(new PowerUp(300, 300, PowerUp.PowerUpType.SPREAD_GUN, powerUpSpriteSheet, powerUpFrames.get(PowerUp.PowerUpType.SPREAD_GUN), itemWidth, itemHeight));
+        powerUps.add(new PowerUp(400, 300, PowerUp.PowerUpType.LASER, powerUpSpriteSheet, powerUpFrames.get(PowerUp.PowerUpType.LASER), itemWidth, itemHeight));
+        powerUps.add(new PowerUp(500, 300, PowerUp.PowerUpType.FIRE, powerUpSpriteSheet, powerUpFrames.get(PowerUp.PowerUpType.FIRE), itemWidth, itemHeight));
 
         List<Boss> bosses = new ArrayList<>();
         bosses.add(new Boss(440, 300,40,40, player, new ProjectileShoot(bossBulletSheet, bossBulletFrame)));
@@ -109,7 +142,7 @@ public class GameModel {
         List<PowerUp> powerUps = new ArrayList<>();
 
         List<Boss> bosses = new ArrayList<>();
-        bosses.add(new SecondBoss(330, 0, 270, 270, player, new AimShoot(bossJavaBulletSheet, bossBulletFrame), "/GameAssets/BossJava.png"));
+        bosses.add(new SecondBoss(330, 0, 270, 270, player, new AimShoot(bossJavaBulletSheet, bossJavaBulletFrame), "/GameAssets/BossJava.png"));
 
         List<Enemy> enemies = new ArrayList<>();
         enemies.add(new Enemy(0,0,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame));
@@ -140,7 +173,6 @@ public class GameModel {
                 2400, 10, 350, 210, height - 100));
     }
 
-
     public void update() {
         Level currentLevel = levels.get(currentLevelIndex);
 
@@ -153,13 +185,18 @@ public class GameModel {
         for (Enemy enemy : currentLevel.getEnemies()) {
             enemy.update(currentLevel.getPlatforms(), currentLevel.getGroundLevel());
 
-            // Handle enemy shooting
             if (enemy.isAlive()) {
                 List<Bullet> newEnemyBullets = enemy.shoot(width, height);
                 if (newEnemyBullets != null && !newEnemyBullets.isEmpty()) {
                     enemyBullets.addAll(newEnemyBullets);
                 }
             }
+        }
+
+        for (Enemy enemy : currentLevel.getEnemies()) {
+            if(enemy.isAlive() && enemy.getBounds().intersects(player.getBounds())) {
+                player.hit();
+            };
         }
 
         // Boss shooting
@@ -174,7 +211,7 @@ public class GameModel {
         List<Bullet> playerBulletsToRemove = new ArrayList<>();
         for (Bullet bullet : playerBullets) {
             bullet.update();
-            if (bullet.isOutOfBounds(width, height)) {
+            if (bullet.isOutOfBounds(width, height) || bullet.isFinished()) {
                 playerBulletsToRemove.add(bullet);
             }
         }
@@ -184,76 +221,67 @@ public class GameModel {
         List<Bullet> enemyBulletsToRemove = new ArrayList<>();
         for (Bullet bullet : enemyBullets) {
             bullet.update();
-            if (bullet.isOutOfBounds(width, height)) {
+            if (bullet.isOutOfBounds(width, height) || bullet.isFinished()) {
                 enemyBulletsToRemove.add(bullet);
             }
         }
         enemyBullets.removeAll(enemyBulletsToRemove);
-
-        List<Enemy> enemiesToRemove = new ArrayList<>();
-        for (Bullet bullet : playerBullets) {
-            for (Enemy enemy : currentLevel.getEnemies()) {
-                if (enemy.isAlive() && bullet.getBounds().intersects(enemy.getBounds())) {
-                    System.out.println("Player hit enemy at ({}, {})" + enemy.getX() + enemy.getY());
-                    enemy.die();
-                    playerBulletsToRemove.add(bullet);
-                    enemiesToRemove.add(enemy);
-                    break; // Exit inner loop once bullet hits an enemy
-                }
-            }
-        }
-        // Remove hit enemies
-        currentLevel.getEnemies().removeAll(enemiesToRemove);
-        playerBullets.removeAll(playerBulletsToRemove);
-
-        for (Bullet bullet : enemyBullets) {
-            if (bullet.getBounds().intersects(player.getBounds())) {
-                player.hit();
-                enemyBulletsToRemove.add(bullet);
-                System.out.println("Player hit by enemy bullet!"); // Debug message
-            }
-        }
-        enemyBullets.removeAll(enemyBulletsToRemove);
-
 
         // Update boss bullets
         List<Bullet> bossBulletsToRemove = new ArrayList<>();
         for (Bullet bullet : bossBullets) {
             bullet.update();
-            if (bullet.isOutOfBounds(width, height)) {
+            if (bullet.isOutOfBounds(width, height) || bullet.isFinished()) {
                 bossBulletsToRemove.add(bullet);
             }
         }
         bossBullets.removeAll(bossBulletsToRemove);
 
+        List<Enemy> enemiesToRemove = new ArrayList<>();
         for (Bullet bullet : playerBullets) {
-            for (Boss boss : currentLevel.getBosses()) {
-                if (bullet.getBounds().intersects(boss.getBounds())) {
-                    boss.hit();
-                    playerBulletsToRemove.add(bullet);
+            for (Enemy enemy : currentLevel.getEnemies()) {
+
+                if (enemy.isAlive() && !bullet.isExploding() && bullet.getBounds().intersects(enemy.getBounds())) {
+                    System.out.println("Player hit enemy at ({}, {})" + enemy.getX() + enemy.getY());
+                    enemy.die();
+                    bullet.explode();
+                    enemiesToRemove.add(enemy);
+                    break;
                 }
             }
         }
-        playerBullets.removeAll(playerBulletsToRemove);
+        currentLevel.getEnemies().removeAll(enemiesToRemove);
 
-        for (Bullet bullet : bossBullets) {
-            if (bullet.getBounds().intersects(player.getBounds())) {
+        for (Bullet bullet : enemyBullets) {
+            if (!bullet.isExploding() && bullet.getBounds().intersects(player.getBounds())) {
                 player.hit();
-                bossBulletsToRemove.add(bullet);
+                bullet.explode();
+                System.out.println("Player hit by enemy bullet!");
             }
         }
-        bossBullets.removeAll(bossBulletsToRemove);
+
+        for (Bullet bullet : playerBullets) {
+            for (Boss boss : currentLevel.getBosses()) {
+                if (!bullet.isExploding() && bullet.getBounds().intersects(boss.getBounds())) {
+                    boss.hit();
+                    bullet.explode();
+                }
+            }
+        }
+
+        for (Bullet bullet : bossBullets) {
+            if (!bullet.isExploding() && bullet.getBounds().intersects(player.getBounds())) {
+                player.hit();
+                bullet.explode();
+            }
+        }
 
         for (Boss boss : currentLevel.getBosses()) {
             if (boss.getBounds().intersects(player.getBounds())) {
                 player.hit();
             }
         }
-        for (Enemy enemy : currentLevel.getEnemies()) {
-            if(enemy.getBounds().intersects(player.getBounds())) {
-                player.hit();
-            };
-        }
+
         List<PowerUp> powerUpsToRemove = new ArrayList<>();
         for (PowerUp powerUp : currentLevel.getPowerUps()) {
             if (player.getBounds().intersects(powerUp.getBounds())) {

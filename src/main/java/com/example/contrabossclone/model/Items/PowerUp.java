@@ -2,6 +2,7 @@ package com.example.contrabossclone.model.Items;
 
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 
@@ -19,15 +20,32 @@ public class PowerUp {
     private double width = 30, height = 30;
     private PowerUpType type;
 
-    public PowerUp(double x, double y, PowerUpType type) {
+    private transient Image spriteSheet;
+    private Rectangle2D spriteFrame;
+
+    public PowerUp(double x, double y, PowerUpType type,
+                   Image spriteSheet, Rectangle2D spriteFrame,
+                   double width, double height) {
         this.x = x;
         this.y = y;
         this.type = type;
+        this.spriteSheet = spriteSheet;
+        this.spriteFrame = spriteFrame;
+        this.width = width;
+        this.height = height;
     }
 
     public void render(GraphicsContext gc) {
-        gc.setFill(Color.ORANGE);
-        gc.fillRect(x, y, width, height);
+        if (spriteSheet != null && spriteFrame != null) {
+            double sX = spriteFrame.getMinX();
+            double sY = spriteFrame.getMinY();
+            double sW = spriteFrame.getWidth();
+            double sH = spriteFrame.getHeight();
+            gc.drawImage(spriteSheet, sX, sY, sW, sH, x, y, width, height);
+        } else {
+            gc.setFill(Color.GOLD);
+            gc.fillRect(x, y, width, height);
+        }
     }
 
     public Rectangle2D getBounds() {

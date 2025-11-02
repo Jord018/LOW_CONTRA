@@ -18,18 +18,14 @@ public class Level {
     private List<PowerUp> powerUps;
     private Image backgroundImage;
 
-    // --- ตัวแปรสำหรับ Crop ---
     private boolean doCrop;
     private double sourceX;
     private double sourceY;
     private double sourceWidth;
     private double sourceHeight;
 
-    // ⭐️ --- (1) เพิ่มตัวแปร groundLevel ---
     private double groundLevel;
 
-    // --- (2) Constructor 1 (แบบไม่ Crop + groundLevel) ---
-    // (ใช้สำหรับด่าน 3)
     public Level(List<Boss> bosses,List<Enemy> enemies, List<Platform> platforms, List<PowerUp> powerUps, String backgroundImagePath, double groundLevel) {
         this.bosses = bosses;
         this.enemies = enemies;
@@ -41,40 +37,31 @@ public class Level {
             System.out.println("Error loading background image: " + backgroundImagePath);
             this.backgroundImage = null;
         }
-        this.groundLevel = groundLevel; // ⭐️ ตั้งค่า groundLevel
+        this.groundLevel = groundLevel;
         this.doCrop = false;
     }
 
-    // --- (3) Constructor 2 (แบบ Crop + groundLevel) ---
-    // (ใช้สำหรับด่าน 1 และ 2)
     public Level(List<Boss> bosses, List<Enemy> enemies, List<Platform> platforms, List<PowerUp> powerUps, String backgroundImagePath,
-                 double sourceX, double sourceY, double sourceWidth, double sourceHeight, double groundLevel) { // ⭐️ เพิ่ม groundLevel
+                 double sourceX, double sourceY, double sourceWidth, double sourceHeight, double groundLevel) {
 
-        // ⭐️ เรียก Constructor ตัวบน
         this(bosses, enemies, platforms, powerUps, backgroundImagePath, groundLevel);
 
-        // เก็บค่าพิกัดการ Crop
         this.sourceX = sourceX;
         this.sourceY = sourceY;
         this.sourceWidth = sourceWidth;
         this.sourceHeight = sourceHeight;
-
-        // บอกว่า Level นี้ต้อง Crop
         this.doCrop = true;
     }
 
     public void render(GraphicsContext gc) {
         if (backgroundImage != null) {
 
-            // --- ⭐️ อัปเดตตรรกะการวาด ---
             if (doCrop) {
-                // ถ้าตั้งค่าให้ Crop: ใช้วิธีวาดแบบ 9 พารามิเตอร์ (Crop)
                 gc.drawImage(backgroundImage,
                         sourceX, sourceY, sourceWidth, sourceHeight, // Source (ตัดจากตรงนี้)
                         0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight() // Destination (วาดลงตรงนี้)
                 );
             } else {
-                // ถ้าไม่ Crop: ใช้วิธีเดิม (ยืดเต็มจอ)
                 gc.drawImage(backgroundImage, 0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
             }
 
@@ -93,13 +80,12 @@ public class Level {
             powerUp.render(gc);
         }
         for (Enemy enemy : enemies) {
-            if (enemy.isAlive()) { // ⭐️ เพิ่ม (วาดเฉพาะ Enemy ที่ยังไม่ตาย)
+            if (enemy.isAlive()) {
                 enemy.render(gc);
             }
         }
     }
 
-    // ⭐️ --- (4) เพิ่ม Getter สำหรับ groundLevel ---
     public double getGroundLevel() {
         return groundLevel;
     }
