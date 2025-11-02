@@ -94,9 +94,9 @@ public class GameModel {
         }
 
         // Initialize all stages
-//        initializeStage1();
+        initializeStage1();
         initializeStage2();
-//        initializeStage3();
+        initializeStage3();
 
         if (!levels.isEmpty()) {
             Level startLevel = levels.get(0);
