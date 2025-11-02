@@ -345,8 +345,10 @@ public class GameModel {
             if (currentLevelIndex < levels.size() - 1) {
                 currentLevelIndex++;
                 currentStage = currentLevelIndex + 1; // Update stage number
-                player.setX(width / 2 - 25);
-                player.setY(height - 50);
+
+                Level newLevel = levels.get(currentLevelIndex);
+                player.setX(newLevel.getStartX());
+                player.setY(newLevel.getStartY());
             } else {
                 gameOver = true;
                 gameOverMessage = "You Win! All 3 Stages Completed!" + player.getScore();
