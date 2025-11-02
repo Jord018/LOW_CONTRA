@@ -41,7 +41,7 @@ public class Enemy extends Player {
         this.target = target;
         this.setWidth(70);
         this.setHeight(70);
-        this.setSpeed(0.5);
+        this.setSpeed(1.5);
         this.lastX = x;
         this.groundLevel = y + 50; // (ค่าเริ่มต้นชั่วคราว)
 
@@ -120,28 +120,32 @@ public class Enemy extends Player {
     public void update(List<Platform> platforms, double screenHeight) {
         if (!alive) return;
 
-        // (7.1) เรียก Player.update() เพื่อให้แรงโน้มถ่วงทำงาน
-        // (เราจะเพิกเฉยต่อ dx, dy, หรือ animation ของ Player)
+        // Save previous position
+        double prevY = getY();
+
+        // Apply gravity and update position
         super.update(platforms, screenHeight);
 
-        // (7.2) เรียก AI
+        // If we hit the ground, update groundLevel
+        if (isOnGround() && getY() == prevY) {
+            groundLevel = getY() + getHeight();
+        }
+
+        // Rest of your update logic...
         move();
 
-        // (7.3) จัดการ Cooldown (โค้ดเดิม)
         if (shootCooldown > 0) {
             shootCooldown--;
         }
 
-        // --- (7.4) Logic Animation ของ Enemy ---
-        // (เช็คว่า X เปลี่ยนไปหรือไม่)
+        // Animation logic...
         if (Math.abs(getX() - lastX) > 0.1) {
             currentState = "RUN";
         } else {
             currentState = "IDLE";
         }
-        this.lastX = getX(); // อัปเดต lastX
+        this.lastX = getX();
 
-        // (7.5) ขยับ Frame (เหมือน SecondBoss)
         animationTick++;
         if (animationTick >= animationSpeed) {
             animationTick = 0;
@@ -185,16 +189,15 @@ public class Enemy extends Player {
     private void move() {
         if (target == null) return;
 
-        // Simple AI: move towards player if not too close
-        double distance = Math.hypot(target.getX() - getX(), target.getY() - getY());
-        if (distance > 50) { // Keep some distance
-            double dx = target.getX() - getX();
-            double dy = target.getY() - getY();
-            double angle = Math.atan2(dy, dx);
+        // Only move if we're on the ground
+        if (isOnGround()) {
+            double distance = target.getX() - getX();
 
-            // Only move horizontally when on ground
-            if (isOnGround()) {
-                setX(getX() + Math.cos(angle) * getSpeed());
+            // Only move if player is far enough away
+            if (Math.abs(distance) > 50) {
+                // Move towards player
+                double direction = distance > 0 ? 1 : -1;
+                setX(getX() + (direction * getSpeed()));
             }
         }
     }
@@ -218,8 +221,8 @@ public class Enemy extends Player {
 
     // ⭐️ (FIX) ลบ @Override ออก
     public boolean isOnGround() {
-        // ⭐️ (FIX 2.2) ใช้ groundLevel ที่เก็บไว้
-        return getY() + getHeight() >= this.groundLevel + 5; // (เพิ่ม +5 buffer)
+        // Small threshold to account for floating point inaccuracies
+        return Math.abs((getY() + getHeight()) - groundLevel) <= 5;
     }
 
 }
