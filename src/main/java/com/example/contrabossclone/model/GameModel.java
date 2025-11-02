@@ -69,11 +69,11 @@ public class GameModel {
         this.powerUpFrames = new HashMap<>();
         try {
             this.powerUpSpriteSheet = new Image(getClass().getResourceAsStream("/GameAssets/SpecialGun.png"));
-            powerUpFrames.put(PowerUp.PowerUpType.MACHINE_GUN, new Rectangle2D(0, 0, 32, 32));
-            powerUpFrames.put(PowerUp.PowerUpType.BARRIER, new Rectangle2D(32, 0, 32, 32));
-            powerUpFrames.put(PowerUp.PowerUpType.SPREAD_GUN, new Rectangle2D(64, 0, 32, 32));
-            powerUpFrames.put(PowerUp.PowerUpType.LASER, new Rectangle2D(96, 0, 32, 32));
-            powerUpFrames.put(PowerUp.PowerUpType.FIRE, new Rectangle2D(128, 0, 32, 32));
+            powerUpFrames.put(PowerUp.PowerUpType.MACHINE_GUN, new Rectangle2D(24.8, 0, 24.8, 16));
+            powerUpFrames.put(PowerUp.PowerUpType.BARRIER, new Rectangle2D(49.6, 16, 24.8, 16));
+            powerUpFrames.put(PowerUp.PowerUpType.SPREAD_GUN, new Rectangle2D(49.6, 0, 24.8, 16));
+            powerUpFrames.put(PowerUp.PowerUpType.LASER, new Rectangle2D(99.2, 16, 24.8, 16));
+            powerUpFrames.put(PowerUp.PowerUpType.FIRE, new Rectangle2D(0, 0, 24.8, 16));
 
         } catch (Exception e) {
             System.err.println("!!! Error loading PowerUp sprite sheet!");
@@ -111,7 +111,7 @@ public class GameModel {
         platforms.add(new Platform(330, 460, 70, 20));
 
         List<PowerUp> powerUps = new ArrayList<>();
-        double itemWidth = 32, itemHeight = 32;
+        double itemWidth = 74.4, itemHeight = 48;
         powerUps.add(new PowerUp(100, 300, PowerUp.PowerUpType.MACHINE_GUN, powerUpSpriteSheet, powerUpFrames.get(PowerUp.PowerUpType.MACHINE_GUN), itemWidth, itemHeight));
         powerUps.add(new PowerUp(200, 300, PowerUp.PowerUpType.BARRIER, powerUpSpriteSheet, powerUpFrames.get(PowerUp.PowerUpType.BARRIER), itemWidth, itemHeight));
         powerUps.add(new PowerUp(300, 300, PowerUp.PowerUpType.SPREAD_GUN, powerUpSpriteSheet, powerUpFrames.get(PowerUp.PowerUpType.SPREAD_GUN), itemWidth, itemHeight));
