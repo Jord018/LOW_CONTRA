@@ -1,7 +1,11 @@
 package com.example.contrabossclone.model.Boss;
 
+import com.example.contrabossclone.model.MachanicShoot.Bullet;
 import com.example.contrabossclone.model.MachanicShoot.ShootingStrategy;
 import com.example.contrabossclone.model.Player;
+import java.util.List;
+import java.util.ArrayList;
+import javafx.geometry.Rectangle2D; // ⭐️ เพิ่ม
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -14,12 +18,24 @@ public class SecondBoss extends Boss {
     private Rectangle2D[] frames;
     private int animationFrame = 0;
     private int animationTick = 0;
-    private int animationSpeed = 200;
+
+    public int getShootCooldown() {
+        return shootCooldown;
+    }
+
+    public void setShootCooldown(int shootCooldown) {
+        this.shootCooldown = shootCooldown;
+    }
+
+    private int shootCooldown = 0;
+    private int animationSpeed = 200; // ความเร็ว Animation (ยิ่งน้อย ยิ่งเร็ว)
+    // ⭐️ (ลบ currentState)
 
 
     public SecondBoss(double x, double y, double width, double height, Player player, ShootingStrategy shootingStrategy, String spriteSheetPath) {
         super(x, y, width, height, player, shootingStrategy);
-
+        setMuzzleOffset(width * 0, height * 0.3);
+        // โหลด Sprite Sheet
         try {
             this.spriteSheet = new Image(getClass().getResourceAsStream(spriteSheetPath));
         } catch (Exception e) {
@@ -83,5 +99,7 @@ public class SecondBoss extends Boss {
         gc.setFill(Color.PURPLE);
         gc.fillRect(getX(), getY(), getWidth(), getHeight());
     }
+
+
 }
 

@@ -1,6 +1,8 @@
 package com.example.contrabossclone.model.MachanicShoot;
 
 import com.example.contrabossclone.model.Player;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
@@ -8,7 +10,13 @@ import java.util.List;
 import java.util.Random;
 
 public class JAVA implements ShootingStrategy {
+    private Image spriteSheet;
+    private Rectangle2D spriteFrame;
 
+    public JAVA(Image spriteSheet, Rectangle2D spriteFrame) {
+        this.spriteSheet = spriteSheet;
+        this.spriteFrame = spriteFrame;
+    }
     private final Random random = new Random();
 
     @Override
@@ -23,63 +31,51 @@ public class JAVA implements ShootingStrategy {
         double vx = Math.cos(angle) * bulletSpeed;
         double vy = Math.sin(angle) * bulletSpeed;
 
-        Bullet bullet = new FloatingBullet(
-                x, y, vx, vy, Color.ORANGE, screenWidth, screenHeight
+        Bullet bullet = new TrackingDropBullet(
+                x, y, vx, vy, Color.ORANGE, screenWidth, screenHeight, player
         );
         bullets.add(bullet);
 
         return bullets;
     }
 
-    /**
-     * Bullet แบบลอยสุ่มวนไปเรื่อย ๆ (Floating / Wobble motion)
-     */
-    public static class FloatingBullet extends Bullet {
-        private final Random rand = new Random();
-        private double angle;
+    public static class TrackingDropBullet extends Bullet {
+        private final Player player;
         private double speed;
-        private double changeTimer = 0;
-        private double targetAngle;
-        private double rotationSpeed = Math.toRadians(1.5);
+        private boolean hasDropped = false;
 
-        public FloatingBullet(double x, double y, double velocityX, double velocityY,
-                              Color color, double screenWidth, double screenHeight) {
+        public TrackingDropBullet(double x, double y, double velocityX, double velocityY,
+                                  Color color, double screenWidth, double screenHeight,
+                                  Player player) {
             super(x, y, velocityX, velocityY, color, screenWidth, screenHeight);
             this.speed = Math.sqrt(velocityX * velocityX + velocityY * velocityY);
-            this.angle = Math.atan2(velocityY, velocityX);
-            this.targetAngle = angle;
+            this.player = player;
+        }
+        @Override
+        public void update() {
+            if (!hasDropped) {
+                setX(getX() + getVelocityX());
+                setY(getY() + getVelocityY());
+
+                // 🔹 เริ่ม drop เมื่ออยู่ใกล้ player ทาง X
+                if (Math.abs(getX() - player.getX()) < 10) { // ปรับค่าตามความต้องการ
+                    hasDropped = true;
+
+                    // ตั้งให้ velocityX = 0 และ velocityY = speed ลงตรง
+                    setVelocityX(0);
+                    setVelocityY(speed);
+                }
+            } else {
+                // ✅ ลงตรงในแนว Y
+                setX(getX() + getVelocityX()); // velocityX = 0
+                setY(getY() + getVelocityY()); // velocityY = speed
+            }
         }
 
-        public void update(double deltaTime) {
-            changeTimer += deltaTime;
 
-            if (changeTimer > 0.5 + rand.nextDouble()) {
-                changeTimer = 0;
-                targetAngle = angle + Math.toRadians(rand.nextDouble() * 180 - 90);
-            }
 
-            double diff = targetAngle - angle;
-            diff = Math.atan2(Math.sin(diff), Math.cos(diff));
-
-            if (diff > rotationSpeed) diff = rotationSpeed;
-            if (diff < -rotationSpeed) diff = -rotationSpeed;
-
-            angle += diff;
-
-            setVelocityX(Math.cos(angle) * speed);
-            setVelocityY(Math.sin(angle) * speed);
-
-            setX(getX() + getVelocityX() * deltaTime);
-            setY(getY() + getVelocityY() * deltaTime);
-
-            if (getX() < 0 || getX() > 1280) {
-                setVelocityX(-getVelocityX());
-                angle = Math.atan2(getVelocityY(), getVelocityX());
-            }
-            if (getY() < 0 || getY() > 720) {
-                setVelocityY(-getVelocityY());
-                angle = Math.atan2(getVelocityY(), getVelocityX());
-            }
-        }
     }
+
+
+
 }

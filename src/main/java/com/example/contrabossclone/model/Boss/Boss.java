@@ -43,11 +43,13 @@ public class Boss {
     }
 
     public List<Bullet> shoot(double screenWidth, double screenHeight) {
-        if (!allowShoot || shootCooldown > 0) {
-            return new ArrayList<>();
-        }
+        if (!allowShoot || shootCooldown > 0) return new ArrayList<>();
         shootCooldown = 60;
-        return shootingStrategy.shoot(x + width / 2, y + height / 2, player, screenWidth, screenHeight, 3);
+
+        double spawnX = getX() + muzzleOffsetX;
+        double spawnY = getY() + muzzleOffsetY;
+
+        return shootingStrategy.shoot(spawnX, spawnY, player, screenWidth, screenHeight, 3);
     }
 
     public void render(GraphicsContext gc) {
@@ -124,6 +126,14 @@ public class Boss {
     public boolean isAllowShoot() {
         return allowShoot;
     }
+    protected double muzzleOffsetX = 0;
+    protected double muzzleOffsetY = 0;
+
+    public void setMuzzleOffset(double offsetX, double offsetY) {
+        this.muzzleOffsetX = offsetX;
+        this.muzzleOffsetY = offsetY;
+    }
+
     
     public void setAllowShoot(boolean allowShoot) {
         this.allowShoot = allowShoot;
