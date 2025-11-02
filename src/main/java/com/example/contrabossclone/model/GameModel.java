@@ -22,14 +22,9 @@ public class GameModel {
     private List<Level> levels = new ArrayList<>();
     private int currentLevelIndex = 0;
     private int currentStage = 1; // Track current stage (1-3)
-
     private List<Bullet> playerBullets = new ArrayList<>();
     private List<Bullet> bossBullets = new ArrayList<>();
-
-    public List<Bullet> getEnemyBullets() {
-        return enemyBullets;
-    }
-
+    public List<Bullet> getEnemyBullets() { return enemyBullets; }
     private List<Bullet> enemyBullets = new ArrayList<>();
     private transient Image bossBulletSheet;
     private transient Image bossJavaBulletSheet;
@@ -45,6 +40,7 @@ public class GameModel {
 
     private double width;
     private double height;
+
 
     public GameModel(double width, double height) {
         this.width = width;
@@ -73,6 +69,7 @@ public class GameModel {
         }
 
         this.powerUpFrames = new HashMap<>();
+
         try {
             this.powerUpSpriteSheet = new Image(getClass().getResourceAsStream("/GameAssets/SpecialGun.png"));
             powerUpFrames.put(PowerUp.PowerUpType.MACHINE_GUN, new Rectangle2D(24.8, 0, 24.8, 16));
@@ -109,11 +106,10 @@ public class GameModel {
             player.setX(startLevel.getStartX());
             player.setY(startLevel.getStartY());
         }
+
     }
 
-    /**
-     * Stage 1: Tutorial stage with multiple weak bosses and all power-ups available
-     */
+
     private void initializeStage1() {
         List<Platform> platforms = new ArrayList<>();
         platforms.add(new Platform(0, 280, 260, 20));
@@ -123,6 +119,7 @@ public class GameModel {
 
         List<PowerUp> powerUps = new ArrayList<>();
         double itemWidth = 74.4, itemHeight = 48;
+
         powerUps.add(new PowerUp(100, 300, PowerUp.PowerUpType.MACHINE_GUN, powerUpSpriteSheet, powerUpFrames.get(PowerUp.PowerUpType.MACHINE_GUN), itemWidth, itemHeight));
         powerUps.add(new PowerUp(200, 300, PowerUp.PowerUpType.BARRIER, powerUpSpriteSheet, powerUpFrames.get(PowerUp.PowerUpType.BARRIER), itemWidth, itemHeight));
         powerUps.add(new PowerUp(300, 300, PowerUp.PowerUpType.SPREAD_GUN, powerUpSpriteSheet, powerUpFrames.get(PowerUp.PowerUpType.SPREAD_GUN), itemWidth, itemHeight));
@@ -130,79 +127,64 @@ public class GameModel {
         powerUps.add(new PowerUp(500, 300, PowerUp.PowerUpType.FIRE, powerUpSpriteSheet, powerUpFrames.get(PowerUp.PowerUpType.FIRE), itemWidth, itemHeight));
 
         List<Boss> bosses = new ArrayList<>();
-        bosses.add(new Boss(440, 300,40,40, player, new ProjectileShoot(bossBulletSheet, bossBulletFrame),true));
-        bosses.add(new Boss(520, 300, 40,40,player, new ProjectileShoot(bossBulletSheet, bossBulletFrame),true));
-        bosses.add(new Boss(460, 330, 100,200,player, new DirectShoot(bossBulletSheet, bossBulletFrame),false));
+        bosses.add(new Boss(440, 300,40,40, player, new ProjectileShoot(bossBulletSheet, bossBulletFrame),true,1));
+        bosses.add(new Boss(520, 300, 40,40,player, new ProjectileShoot(bossBulletSheet, bossBulletFrame),true,1));
+        bosses.add(new Boss(460, 400, 100,100,player, new DirectShoot(bossBulletSheet, bossBulletFrame),false,1));
 
         List<Enemy> enemies = new ArrayList<>();
-        enemies.add(new Enemy(300,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame));
+        enemies.add(new Enemy(300,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame,1));
 
-        levels.add(new Level(bosses, enemies, platforms, powerUps, "/GameAssets/MapBossWall.png",
-                3150, 10, 350, 210, height - 50,10, 10));
+        levels.add(new Level(bosses, enemies, platforms, powerUps, "/GameAssets/MapBossWall.png", 3150, 10, 350, 210, height - 50,10, 10));
     }
 
-    /**
-     * Stage 2: Intermediate stage with stronger boss and more platforms
-     */
+
     private void initializeStage2() {
         List<Platform> platforms = new ArrayList<>();
 
         List<PowerUp> powerUps = new ArrayList<>();
 
         List<Boss> bosses = new ArrayList<>();
-        bosses.add(new SecondBoss(330, 0, 270, 270, player, new JAVA(bossJavaBulletSheet, bossJavaBulletFrames), "/GameAssets/BossJava.png"));
+        bosses.add(new SecondBoss(330, 0, 270, 270, player, new JAVA(bossJavaBulletSheet, bossJavaBulletFrames), "/GameAssets/BossJava.png",20));
 
         List<Enemy> enemies = new ArrayList<>();
-        enemies.add(new Enemy(0,0,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame));
+        enemies.add(new Enemy(0,0,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame,3));
 
         platforms.add(new Platform(0, 400, 90, 500, true));
         platforms.add(new Platform(290, 200, 90, 800, true));
 
-        levels.add(new Level(bosses, enemies, platforms, powerUps, "/GameAssets/MapBossJava.png",
-                500, 10, 350, 210, height - 100,10, 10));
+        levels.add(new Level(bosses, enemies, platforms, powerUps, "/GameAssets/MapBossJava.png", 500, 10, 350, 210, height - 100,10, 10));
     }
 
-    /**
-     * Stage 3: Final stage with challenging boss configuration
-     */
+
     private void initializeStage3() {
         List<PowerUp> powerUps = new ArrayList<>();
         List<Platform> platforms = new ArrayList<>();
 
         List<Boss> bosses = new ArrayList<>();
-        bosses.add(new ThirdBoss(350,  15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame)));
-        bosses.add(new ThirdBoss(650, 15, 100, 100 ,player, new ProjectileShoot(bossBulletSheet, bossBulletFrame)));
-        bosses.add(new ThirdBoss(50, 15, 100, 100 ,player, new ProjectileShoot(bossBulletSheet, bossBulletFrame)));
+
+        bosses.add(new ThirdBoss(350, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame),10));
+        bosses.add(new ThirdBoss(650, 15, 100, 100 ,player, new ProjectileShoot(bossBulletSheet, bossBulletFrame),10));
+        bosses.add(new ThirdBoss(50, 15, 100, 100 ,player, new ProjectileShoot(bossBulletSheet, bossBulletFrame),10));
 
         List<Enemy> enemies = new ArrayList<>();
 
-        levels.add(new Level(bosses, enemies, platforms, powerUps, "/GameAssets/MapBossJava.png",
-                2400, 10, 350, 210, height - 100,10, 10));
+        levels.add(new Level(bosses, enemies, platforms, powerUps, "/GameAssets/MapBossJava.png", 2400, 10, 350, 210, height - 100,10, 10));
     }
+
 
     public void update() {
         Level currentLevel = levels.get(currentLevelIndex);
-
         player.update(currentLevel.getPlatforms(), currentLevel.getGroundLevel());
 
-        // Check for left wall
-        if (player.getX() < 0) {
-            player.setX(0);
-        }
-        // Check for right wall
-        if (player.getBounds().getMaxX() > width) {
-            player.setX(width - player.getWidth());
-        }
+        if (player.getX() < 0) { player.setX(0); }
+        if (player.getBounds().getMaxX() > width) { player.setX(width - player.getWidth()); }
 
         for (Boss boss : currentLevel.getBosses()) {
             boss.update();
         }
 
-        // Update Enemies
         for (Enemy enemy : currentLevel.getEnemies()) {
             enemy.update(currentLevel.getPlatforms(), currentLevel.getGroundLevel());
-
-            // Handle enemy shooting
             if (enemy.isAlive()) {
                 List<Bullet> newEnemyBullets = enemy.shoot(width, height);
                 if (newEnemyBullets != null && !newEnemyBullets.isEmpty()) {
@@ -211,14 +193,12 @@ public class GameModel {
             }
         }
 
-        // Collision: Enemy vs Player
         for (Enemy enemy : currentLevel.getEnemies()) {
             if (enemy.isAlive() && enemy.getBounds().intersects(player.getBounds())) {
                 player.hit();
             }
         }
 
-        // Update Player bullets
         List<Bullet> playerBulletsToRemove = new ArrayList<>();
         for (Bullet bullet : playerBullets) {
             bullet.update();
@@ -228,7 +208,6 @@ public class GameModel {
         }
         playerBullets.removeAll(playerBulletsToRemove);
 
-        // Update Enemy bullets
         List<Bullet> enemyBulletsToRemove = new ArrayList<>();
         for (Bullet bullet : enemyBullets) {
             bullet.update();
@@ -238,7 +217,6 @@ public class GameModel {
         }
         enemyBullets.removeAll(enemyBulletsToRemove);
 
-        // Update Boss bullets
         List<Bullet> bossBulletsToRemove = new ArrayList<>();
         for (Bullet bullet : bossBullets) {
             bullet.update();
@@ -248,15 +226,16 @@ public class GameModel {
         }
         bossBullets.removeAll(bossBulletsToRemove);
 
-        boolean enemiesCleared = currentLevel.getEnemies().isEmpty(); // ✅ เช็ค Enemy หมดแล้ว
+        boolean enemiesCleared = currentLevel.getEnemies().isEmpty();
 
-        // Collision: Player bullets vs Enemy
+        // ✅ เพิ่มระบบให้คะแนนเมื่อ enemy ถูกยิงตาย
         List<Enemy> enemiesToRemove = new ArrayList<>();
         for (Bullet bullet : playerBullets) {
             for (Enemy enemy : currentLevel.getEnemies()) {
                 if (enemy.isAlive() && !bullet.isExploding() && bullet.getBounds().intersects(enemy.getBounds())) {
                     enemy.die();
                     bullet.explode();
+                    player.setScore(player.getScore() + enemy.getScore());  // ✅ เพิ่มคะแนนเมื่อศัตรูตาย
                     enemiesToRemove.add(enemy);
                     break;
                 }
@@ -264,7 +243,6 @@ public class GameModel {
         }
         currentLevel.getEnemies().removeAll(enemiesToRemove);
 
-        // Collision: Enemy bullets vs Player
         for (Bullet bullet : enemyBullets) {
             if (!bullet.isExploding() && bullet.getBounds().intersects(player.getBounds())) {
                 player.hit();
@@ -273,9 +251,7 @@ public class GameModel {
             }
         }
 
-        // Collision & shooting: Boss (ทำงานก็ต่อเมื่อ Enemy หมดแล้ว)
         if (enemiesCleared) {
-            // Boss shooting
             for (Boss boss : currentLevel.getBosses()) {
                 List<Bullet> newBossBullets = boss.shoot(width, height);
                 if (newBossBullets != null && !newBossBullets.isEmpty()) {
@@ -283,19 +259,25 @@ public class GameModel {
                 }
             }
 
-            // Collision: Player bullets vs Boss
             for (Bullet bullet : playerBullets) {
                 for (Boss boss : currentLevel.getBosses()) {
                     if (!bullet.isExploding() && bullet.getBounds().intersects(boss.getBounds())) {
+                        boolean wasAlive = !boss.isDefeated(); // ตรวจสถานะก่อนโดนยิง
                         boss.hit();
                         bullet.explode();
+
+                        // ให้คะแนนทันทีตอน HP หมด (ก่อนโดนลบ)
+                        if (wasAlive && boss.isDefeated()) {
+                            player.setScore(player.getScore() + boss.getScore());
+                        }
                     }
+
                 }
             }
         }
+
         playerBullets.removeAll(playerBulletsToRemove);
 
-        // Collision: Boss bullets vs Player
         for (Bullet bullet : bossBullets) {
             if (!bullet.isExploding() && bullet.getBounds().intersects(player.getBounds())) {
                 player.hit();
@@ -303,7 +285,6 @@ public class GameModel {
             }
         }
 
-        // Collision: Player vs Boss bodies
         if (enemiesCleared) {
             for (Boss boss : currentLevel.getBosses()) {
                 if (boss.getBounds().intersects(player.getBounds())) {
@@ -312,7 +293,6 @@ public class GameModel {
             }
         }
 
-        // Collision: Player vs PowerUps
         List<PowerUp> powerUpsToRemove = new ArrayList<>();
         for (PowerUp powerUp : currentLevel.getPowerUps()) {
             if (player.getBounds().intersects(powerUp.getBounds())) {
@@ -328,17 +308,14 @@ public class GameModel {
         }
         currentLevel.getPowerUps().removeAll(powerUpsToRemove);
 
-        // Remove defeated bosses
-        currentLevel.getBosses().removeIf(Boss::isDefeated);
+
 
         if (currentLevel.getBosses().isEmpty() && currentLevel.getEnemies().isEmpty()) {
             if (enemiesCleared) {
                 currentLevel.getBosses().removeIf(Boss::isDefeated);
             }
 
-            // Score Update & Stage Progression
             if (enemiesCleared && currentLevel.getBosses().isEmpty()) {
-                player.setScore(player.getScore() + 1);
                 if (currentLevelIndex < levels.size() - 1) {
                     currentLevelIndex++;
                     currentStage = currentLevelIndex + 1;
@@ -350,14 +327,15 @@ public class GameModel {
                 }
             }
 
-            // Check Game Over
             if (player.getLives() <= 0) {
                 gameOver = true;
                 gameOverMessage = "Game Over";
             }
-
         }
+        currentLevel.getBosses().removeIf(Boss::isDefeated);
     }
+
+
 
     public void resize(double newWidth, double newHeight) {
         double scaleX = newWidth / this.width;
@@ -367,7 +345,6 @@ public class GameModel {
         player.setY(player.getY() * scaleY);
         player.setRespawnPosition(newWidth / 2 - 25, newHeight - 50);
 
-        // Adjust positions of existing bullets (optional, can also clear and re-add)
         for (Bullet bullet : playerBullets) {
             bullet.setX(bullet.getX() * scaleX);
             bullet.setY(bullet.getY() * scaleY);
@@ -383,18 +360,19 @@ public class GameModel {
             bullet.setY(bullet.getY() * scaleY);
         }
 
-        // Adjust positions of platforms, bosses, powerups in current level
         Level currentLevel = levels.get(currentLevelIndex);
+
         for (Platform platform : currentLevel.getPlatforms()) {
             platform.setX(platform.getX() * scaleX);
             platform.setY(platform.getY() * scaleY);
         }
+
         for (Boss boss : currentLevel.getBosses()) {
             boss.setX(boss.getX() * scaleX);
             boss.setY(boss.getY() * scaleY);
         }
 
-        for (Enemy enemy : currentLevel.getEnemies()) { // ⭐️ (เพิ่ม Enemy)
+        for (Enemy enemy : currentLevel.getEnemies()) {
             enemy.setX(enemy.getX() * scaleX);
             enemy.setY(enemy.getY() * scaleY);
         }
@@ -408,46 +386,24 @@ public class GameModel {
         this.height = newHeight;
     }
 
-    public Player getPlayer() {
-        return player;
-    }
 
-    public List<Level> getLevels() {
-        return levels;
-    }
+    public Player getPlayer() { return player; }
 
-    public int getCurrentLevelIndex() {
-        return currentLevelIndex;
-    }
+    public List<Level> getLevels() { return levels; }
 
-    public List<Bullet> getPlayerBullets() {
-        return playerBullets;
-    }
+    public int getCurrentLevelIndex() { return currentLevelIndex; }
 
-    public List<Bullet> getBossBullets() {
-        return bossBullets;
-    }
+    public List<Bullet> getPlayerBullets() { return playerBullets; }
 
-    public boolean isGameOver() {
-        return gameOver;
-    }
+    public List<Bullet> getBossBullets() { return bossBullets; }
 
-    public String getGameOverMessage() {
-        return gameOverMessage;
-    }
+    public boolean isGameOver() { return gameOver; }
 
-    public double getWidth() {
-        return width;
-    }
+    public String getGameOverMessage() { return gameOverMessage; }
 
-    public double getHeight() {
-        return height;
-    }
+    public double getWidth() { return width; }
 
-    /**
-     * Returns the current stage number (1-3)
-     */
-    public int getCurrentStage() {
-        return currentStage;
-    }
+    public double getHeight() { return height; }
+
+    public int getCurrentStage() { return currentStage; }
 }

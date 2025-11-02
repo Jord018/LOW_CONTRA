@@ -33,31 +33,33 @@ public class GameController {
         scene.setOnKeyReleased(e -> activeKeys.remove(e.getCode()));
     }
     private void checkContraCode(KeyCode key) {
-        // เพิ่ม key ล่าสุดเข้า sequence
+        // Add the new key to the sequence
         contraSequence.add(key);
 
-        // ตรวจสอบ sequence ว่ายังตรงกับรหัส Contra
+        // Remove the oldest key if we exceed the sequence length
         if (contraSequence.size() > CONTRA_CODE.length) {
-            contraSequence.remove(0); // ลบตัวเก่าที่เกิน
+            contraSequence.remove(0);
         }
 
-        // ตรวจสอบว่า sequence ถูกต้องหรือไม่
-        boolean matched = true;
-        for (int i = 0; i < contraSequence.size(); i++) {
-            if (contraSequence.get(i) != CONTRA_CODE[i]) {
-                matched = false;
-                break;
+        // Only check when we have enough keys
+        if (contraSequence.size() == CONTRA_CODE.length) {
+            boolean matched = true;
+            for (int i = 0; i < CONTRA_CODE.length; i++) {
+                if (contraSequence.get(i) != CONTRA_CODE[i]) {
+                    matched = false;
+                    break;
+                }
             }
-        }
 
-        if (matched && contraSequence.size() == CONTRA_CODE.length) {
-            activateContraCheat();
-            contraSequence.clear(); // รีเซ็ตหลังใช้งาน
+            if (matched) {
+                activateContraCheat();
+                contraSequence.clear();
+            }
         }
     }
     private void activateContraCheat() {
         System.out.println("CONTRA CHEAT ACTIVATED!");
-        model.getPlayer().setLives(100); // ตัวอย่างเพิ่มชีวิต
+        model.getPlayer().setInvincible(true); // ตัวอย่างเพิ่มชีวิต
 
     }
     public void handleInput() {

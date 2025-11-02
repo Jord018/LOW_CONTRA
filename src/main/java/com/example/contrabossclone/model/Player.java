@@ -26,6 +26,10 @@ public class Player {
         FIRE
     }
 
+    public WeaponType getWeaponType() {
+        return weaponType;
+    }
+
     private WeaponType weaponType = WeaponType.NORMAL;
 
     private double x, y;
@@ -90,16 +94,24 @@ public class Player {
 
     private int maxHealth = 100;
     private static final Logger logger = LogManager.getLogger(Player.class);
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
     private int score = 0;
     private int health = maxHealth;
 
-    public void setLives(int lives) {
-        this.lives = lives;
-    }
+
 
     private int lives = 3;
     private int fireRate = 30;
     private int fireCooldown = 0;
+
+    public void setInvincible(boolean invincible) {
+        isInvincible = invincible;
+    }
+
     private boolean isInvincible = false;
     private int invincibilityTimer = 0;
     private double respawnX, respawnY;
@@ -416,7 +428,6 @@ public class Player {
         }
 
         String animKey = currentState + (facingRight ? "_R" : "_L");
-logger.info(("DEBUG: animKey = " + animKey + ", currentState = " + currentState + ", facingRight = " + facingRight));
         Rectangle2D[] frames = animations.get(animKey);
 
         if (frames == null) {
@@ -660,9 +671,7 @@ logger.info(("DEBUG: animKey = " + animKey + ", currentState = " + currentState 
         return score;
     }
 
-    public void setScore(int i) {
-        this.score = score;
-    }
+
 
     public void setLives(int i) {this.lives = lives;}
 }
