@@ -51,11 +51,34 @@ public class Player {
 
     private double speed = 2;
     private double dx = 0;
+
+    public double getVelocityY() {
+        return velocityY;
+    }
+
+    public void setVelocityY(double velocityY) {
+        this.velocityY = velocityY;
+    }
+
     private double velocityY = 0;
     private double gravity = 0.15;
+
+    public boolean isOnGround() {
+        return onGround;
+    }
+
+    public void setOnGround(boolean onGround) {
+        this.onGround = onGround;
+    }
+
     private boolean onGround = false;
     private boolean isPressingDown = false;
-    private double aimAngle = 90.0;
+
+    public double getAimAngle() {
+        return aimAngle;
+    }
+
+    private double aimAngle = 0.0; // 0.0 means facing right
 
     // ⭐️ --- (3) เพิ่มตัวแปรสำหรับ Animation ---
     private transient Image spriteSheet; // ใช้ 'transient' เพื่อกันปัญหา Serialize
@@ -90,6 +113,10 @@ public class Player {
 
     public void setLives(int lives) {
         this.lives = lives;
+    }
+
+    public WeaponType getWeaponType() {
+        return weaponType;
     }
 
     private int lives = 3;
@@ -240,18 +267,19 @@ public class Player {
     // ⭐️ --- (6) อัปเดตการเคลื่อนที่ให้เก็บทิศทาง ---
     public void moveLeft() {
         dx = -speed;
-        facingRight = false; // ⭐️ เพิ่ม
-        logger.debug("Player moved left");
+        facingRight = false;
+        logger.debug("Player moving left - Position: (x: {}, y: {})", x, y);
     }
 
     public void moveRight() {
         dx = speed;
-        facingRight = true; // ⭐️ เพิ่ม
-        logger.debug("Player moved right");
+        facingRight = true;
+        logger.debug("Player moving right - Position: (x: {}, y: {})", x, y);
     }
 
     public void stop() {
         dx = 0;
+        logger.debug("Player stopped - Position: (x: {}, y: {})", x, y);
     }
 
     public void jump() {
@@ -259,12 +287,14 @@ public class Player {
             if (isPressingDown) {
                 // Fall through platform
                 y += 1;
-                logger.debug("Player fell through platform");
+                logger.debug("Player fell through platform at (x: {}, y: {})", x, y);
             } else {
                 velocityY = -7; // Jump strength
-                logger.debug("Player jumped");
+                logger.debug("Player jumped from position (x: {}, y: {})", x, y);
             }
             onGround = false;
+        } else {
+            logger.debug("Jump attempted but player is not on ground");
         }
     }
 
@@ -277,7 +307,7 @@ public class Player {
             this.isPressingDown = pressingDown;
             y = bottomY - (pressingDown ? PRONE_HEIGHT : height);
             // หลังเปลี่ยนท่า ให้เท้ายังอยู่ที่เดิม
-
+            logger.info("Action: Set Pressing Down | New State: {} | Position adjusted to y={}", pressingDown, y);
         }
     }
 
@@ -285,6 +315,7 @@ public class Player {
     public void setRespawnPosition(double x, double y) {
         this.respawnX = x;
         this.respawnY = y;
+        logger.info("Action: Set Respawn Position | RespawnX: {} | RespawnY: {}", x, y);
     }
 
     public void update(List<Platform> platforms, double screenHeight) {
@@ -478,6 +509,8 @@ public class Player {
     // ⭐️ --- (3) แก้ไขเมธอด shoot() ---
     public List<Bullet> shoot(double screenWidth, double screenHeight) {
         fireCooldown = fireRate;
+        logger.info("Player fired {} shot at angle {}° - Position: (x: {}, y: {})",
+            weaponType, aimAngle, x, y);
         List<Bullet> bullets = new ArrayList<>();
         double bulletSpeed = 10;
 
@@ -569,6 +602,7 @@ public class Player {
     }
 
     public void setWeaponType(WeaponType weaponType) {
+        logger.info("Weapon changed from {} to {}", this.weaponType, weaponType);
         this.weaponType = weaponType;
         if (weaponType == WeaponType.MACHINE_GUN) {
             fireRate = 10;
@@ -576,10 +610,8 @@ public class Player {
             fireRate = 30;
         }
     }
-
-
-
     public void activateBarrier() {
+        logger.info("Barrier activated - Player is now invincible for {} seconds", invincibilityTimer / 60.0);
         isInvincible = true;
         invincibilityTimer = 999999999; // 5 seconds of invincibility (60 frames per second)
     }
@@ -601,26 +633,28 @@ public class Player {
 
     public void hit() {
         if (!isInvincible) {
-            health -= 20;
+            int damage = 10;
+            health -= damage;
+            logger.warn("Player hit! Health: {}/{}, Damage taken: {}", health, maxHealth, damage);
+            isInvincible = true;
+            invincibilityTimer = 120; // 2 seconds of invincibility
             if (health <= 0) {
-                lives--;
-                if (lives > 0) {
-                    respawn();
-                } else {
-                    health = 0;
-                }
+                logger.warn("Player defeated! Respawning.");
+                respawn();
             }
+        } else {
+            logger.info("Player hit but is invincible");
         }
-        logger.info("Player hit");
     }
 
     public void respawn() {
-        health = maxHealth;
         x = respawnX;
         y = respawnY;
+        health = maxHealth;
+        lives--;
         isInvincible = true;
-        //180
-        invincibilityTimer = 999999999; // 3 seconds of invincibility after respawning
+        invincibilityTimer = 180; // 3 seconds of invincibility after respawn
+        logger.warn("Player respawned at (x: {}, y: {}). Lives remaining: {}", x, y, lives);
         logger.info("Player respawned");
     }
 

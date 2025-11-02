@@ -47,7 +47,7 @@ public class Boss {
             return new ArrayList<>();
         }
         shootCooldown = 60;
-        return shootingStrategy.shoot(x + width / 2, y + height / 2, player, screenWidth, screenHeight, 5);
+        return shootingStrategy.shoot(x + width / 2, y + height / 2, player, screenWidth, screenHeight, 3);
     }
 
     public void render(GraphicsContext gc) {

@@ -63,15 +63,15 @@ public class GameController {
 
         if (activeKeys.contains(KeyCode.J)) {
             if (player.canShoot()) {
-                // เพิ่ม model.getWidth() และ model.getHeight() เข้าไป
                 model.getPlayerBullets().addAll(player.shoot(model.getWidth(), model.getHeight()));
             }
         }
 
-        if (down) {
+        if (down && player.isOnGround() && !left && !right && !up) {
             player.setPressingDown(true);
         } else {
             player.setPressingDown(false);
         }
     }
 }
+

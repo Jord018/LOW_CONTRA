@@ -11,8 +11,6 @@ import com.example.contrabossclone.model.MachanicShoot.DirectShoot;
 import com.example.contrabossclone.model.MachanicShoot.ProjectileShoot;
 import com.example.contrabossclone.model.Stage.Level;
 import com.example.contrabossclone.model.Stage.Platform;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.image.Image;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,11 +32,6 @@ public class GameModel {
 
     private List<Bullet> enemyBullets = new ArrayList<>();
 
-    // ⭐️ (1) เราโหลด Sprite ของกระสุนบอสไว้ที่นี่
-    private transient Image bossBulletSheet;
-    private transient Image bossJavaBulletSheet;
-    private Rectangle2D bossBulletFrame;
-
     private boolean gameOver = false;
     private String gameOverMessage = "";
 
@@ -50,29 +43,10 @@ public class GameModel {
         this.height = height;
         player = new Player(width / 2 - 25, height - 50);
 
-        // ⭐️ (2) เราโหลด Sprite แค่ครั้งเดียว
-        try {
-            this.bossBulletSheet = new Image(getClass().getResourceAsStream("/GameAssets/BossWallBullet.png"));
-            // ⭐️⭐️ (สำคัญ) แก้พิกัด (sX, sY, sW, sH) ให้ตรงกับไฟล์รูปของคุณ
-            this.bossBulletFrame = new Rectangle2D(0, 0, 124, 126); // (sX, sY, sW, sH)
-        } catch (Exception e) {
-            System.err.println("!!! Error loading boss bullet sprite!");
-            this.bossBulletSheet = null;
-        }
-
-        try {
-            this.bossJavaBulletSheet = new Image(getClass().getResourceAsStream("/GameAssets/BossJavaBullet.png"));
-            // ⭐️⭐️ (สำคัญ) แก้พิกัด (sX, sY, sW, sH) ให้ตรงกับไฟล์รูปของคุณ
-            this.bossBulletFrame = new Rectangle2D(0, 0, 93.75, 93.75); // (sX, sY, sW, sH)
-        } catch (Exception e) {
-            System.err.println("!!! Error loading boss bullet sprite!");
-            this.bossBulletSheet = null;
-        }
-
         // Initialize all stages
 //        initializeStage1();
-        initializeStage2();
-        initializeStage3(); // ⭐️ (เปิดใช้งานด่าน 3)
+//        initializeStage2();
+        initializeStage3();
 
     }
 
@@ -92,87 +66,70 @@ public class GameModel {
         powerUps.add(new PowerUp(300, 300, PowerUp.PowerUpType.SPREAD_GUN));
         powerUps.add(new PowerUp(400, 300, PowerUp.PowerUpType.LASER));
         powerUps.add(new PowerUp(500, 300, PowerUp.PowerUpType.FIRE));
-
+        
         List<Boss> bosses = new ArrayList<>();
-        // ⭐️ (3) ส่ง Sprite ที่โหลดไว้ เข้าไปใน Constructor
-        bosses.add(new Boss(440, 300,40,40, player, new ProjectileShoot(bossBulletSheet, bossBulletFrame)));
-        bosses.add(new Boss(520, 300, 40,40,player, new ProjectileShoot(bossBulletSheet, bossBulletFrame)));
-        // ⭐️ (แก้ไข) ลบ 'false' ที่เกินมา และส่ง Sprite เข้าไป
-        bosses.add(new Boss(460, 330, 100,200,player, new DirectShoot(bossBulletSheet, bossBulletFrame)));
+        bosses.add(new Boss(440, 300,40,40, player, new ProjectileShoot()));
+        bosses.add(new Boss(520, 300, 40,40,player, new ProjectileShoot()));
+        bosses.add(new Boss(460, 330, 100,200,player, new DirectShoot(), false));
 
         List<Enemy> enemies = new ArrayList<>();
-        // ⭐️ (3) ส่ง Sprite ที่โหลดไว้ เข้าไปใน Constructor ของ Enemy
-        enemies.add(new Enemy(300,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame));
-
+        //enemies.add(new Enemy(width / 2 - 25, height - 50, player));
         levels.add(new Level(bosses, enemies, platforms, powerUps, "/GameAssets/MapBossWall.png",
-                3150, 10, 350, 210, height - 50)); // ⭐️ (เพิ่ม groundLevel)
-    }
+                3150, 10, 350, 210,350)); // 👈 (sX, sY, sWidth, sHeight)
+        }
 
     /**
      * Stage 2: Intermediate stage with stronger boss and more platforms
      */
     private void initializeStage2() {
         List<Platform> platforms = new ArrayList<>();
-
+        
         List<PowerUp> powerUps = new ArrayList<>();
         // No power-ups in stage 2 - player must rely on what they collected in stage 1
-
+        
         List<Boss> bosses = new ArrayList<>();
-        // ⭐️ (3) ส่ง Sprite ที่โหลดไว้ เข้าไปใน Constructor (ของ AimShoot)
-        bosses.add(new SecondBoss(330, 0, 270, 270, player, new AimShoot(bossJavaBulletSheet, bossBulletFrame), "/GameAssets/BossJava.png"));
-
+        bosses.add(new SecondBoss(330, 0, 270, 270, player, new AimShoot(), "/GameAssets/BossJava.png"));
         List<Enemy> enemies = new ArrayList<>();
-        // ⭐️ (3) ส่ง Sprite ที่โหลดไว้ เข้าไปใน Constructor ของ Enemy
-        enemies.add(new Enemy(0,0,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame));
-
+        //enemies.add(new Enemy(width / 2 - 25, height - 50, player));
         levels.add(new Level(bosses, enemies, platforms, powerUps, "/GameAssets/MapBossJava.png",
-                500, 10, 350, 210, height - 100)); // ⭐️ (เพิ่ม groundLevel)
+                500, 10,
+                350, 210,350)); // 👈 (sX, sY, sWidth, sHeight)
     }
 
     /**
      * Stage 3: Final stage with challenging boss configuration
      */
+    //พรุ่งนี้ก่อน
     private void initializeStage3() {
         List<PowerUp> powerUps = new ArrayList<>();
         List<Platform> platforms = new ArrayList<>();
         platforms.add(new Platform(100, height - 100, 100, 20));
         platforms.add(new Platform(width - 200, height - 100, 100, 20));
         platforms.add(new Platform(350, height - 200, 100, 20));
-
+        
         List<Boss> bosses = new ArrayList<>();
-        // ⭐️ (3) ส่ง Sprite ที่โหลดไว้ เข้าไปใน Constructor
-        bosses.add(new ThirdBoss(width - 120, height - 120, 100, 100 ,player, new ProjectileShoot(bossBulletSheet, bossBulletFrame)));
-        bosses.add(new ThirdBoss(width - 150, height - 120, 100, 100 ,player, new ProjectileShoot(bossBulletSheet, bossBulletFrame)));
-        bosses.add(new ThirdBoss(width - 180, height - 120, 100, 100 ,player, new ProjectileShoot(bossBulletSheet, bossBulletFrame)));
-
+        bosses.add(new ThirdBoss(width - 120, height - 120, 0,0 ,player, new ProjectileShoot()));
+        bosses.add(new ThirdBoss(width - 120, height - 120, 0,0 ,player, new ProjectileShoot()));
+        bosses.add(new ThirdBoss(width - 120, height - 120, 0,0 ,player, new ProjectileShoot()));
         List<Enemy> enemies = new ArrayList<>();
-        // ⭐️ (3) ส่ง Sprite ที่โหลดไว้ เข้าไปใน Constructor ของ Enemy
-        enemies.add(new Enemy(0,0,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame));
-
+        //enemies.add(new Enemy(width / 2 + 100, height - 50, player));
         levels.add(new Level(bosses, enemies, platforms, powerUps, "/GameAssets/MapBossJava.png",
-                2400, 10, 350, 210, height - 50)); // ⭐️ (เพิ่ม groundLevel)
+                2400, 10, 350, 210,350)); // 👈 (sX, sY, sWidth, sHeight)
     }
 
 
     public void update() {
         Level currentLevel = levels.get(currentLevelIndex);
-
-        // ⭐️ (4) ส่ง groundLevel ของด่านปัจจุบันไปให้ Player
-        player.update(currentLevel.getPlatforms(), currentLevel.getGroundLevel());
-
+        player.update(currentLevel.getPlatforms(), height-50);
         for (Boss boss : currentLevel.getBosses()) {
             boss.update();
         }
-
         // Update enemies and handle their shooting
         for (Enemy enemy : currentLevel.getEnemies()) {
-            // ⭐️ (4) ส่ง groundLevel ของด่านปัจจุบันไปให้ Enemy
-            enemy.update(currentLevel.getPlatforms(), currentLevel.getGroundLevel());
-
+            enemy.update(currentLevel.getPlatforms(), height);
+            
             // Handle enemy shooting
             if (enemy.isAlive()) {
-                // ⭐️ (5) ส่งขนาดจอ (width, height) เข้าไปใน shoot()
-                // (เพื่อให้ Bullet รู้ขอบเขต)
                 List<Bullet> newEnemyBullets = enemy.shoot(width, height);
                 if (newEnemyBullets != null && !newEnemyBullets.isEmpty()) {
                     enemyBullets.addAll(newEnemyBullets);
@@ -308,7 +265,7 @@ public class GameModel {
         // Remove defeated bosses
         currentLevel.getBosses().removeIf(Boss::isDefeated);
 //Score Update
-        if (currentLevel.getBosses().isEmpty() && currentLevel.getEnemies().isEmpty()) { // ⭐️ (เพิ่มเช็ค Enemy)
+        if (currentLevel.getBosses().isEmpty()) {
             player.setScore(player.getScore() + 1);
             if (currentLevelIndex < levels.size() - 1) {
                 currentLevelIndex++;
@@ -341,13 +298,7 @@ public class GameModel {
             bullet.setX(bullet.getX() * scaleX);
             bullet.setY(bullet.getY() * scaleY);
         }
-
         for (Bullet bullet : bossBullets) {
-            bullet.setX(bullet.getX() * scaleX);
-            bullet.setY(bullet.getY() * scaleY);
-        }
-
-        for (Bullet bullet : enemyBullets) { // ⭐️ (เพิ่ม Enemy bullets)
             bullet.setX(bullet.getX() * scaleX);
             bullet.setY(bullet.getY() * scaleY);
         }
@@ -362,12 +313,6 @@ public class GameModel {
             boss.setX(boss.getX() * scaleX);
             boss.setY(boss.getY() * scaleY);
         }
-
-        for (Enemy enemy : currentLevel.getEnemies()) { // ⭐️ (เพิ่ม Enemy)
-            enemy.setX(enemy.getX() * scaleX);
-            enemy.setY(enemy.getY() * scaleY);
-        }
-
         for (PowerUp powerUp : currentLevel.getPowerUps()) {
             powerUp.setX(powerUp.getX() * scaleX);
             powerUp.setY(powerUp.getY() * scaleY);
