@@ -95,10 +95,6 @@ public class Player {
     private int maxHealth = 100;
     private static final Logger logger = LogManager.getLogger(Player.class);
 
-    public void setScore(int score) {
-        this.score = score;
-    }
-
     private int score = 0;
     private int health = maxHealth;
 
@@ -671,7 +667,9 @@ public class Player {
         return score;
     }
 
-
+    public void setScore(int newScore) {
+        this.score = newScore;
+    }
 
     public void setLives(int i) {this.lives = lives;}
 }

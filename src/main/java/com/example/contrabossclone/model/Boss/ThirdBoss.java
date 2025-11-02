@@ -16,7 +16,7 @@ import java.util.List;
 public class ThirdBoss extends Boss{
 
 
-    public ThirdBoss(double x, double y,double width, double height, Player player, ShootingStrategy shootingStrategy, int score, String spriteSheetPath) {
+    public ThirdBoss(double x, double y,double width, double height, Player player, ShootingStrategy shootingStrategy, String spriteSheetPath, int score) {
         super(x, y, width, height, player, shootingStrategy, score);
 
         try {

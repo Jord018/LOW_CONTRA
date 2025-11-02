@@ -104,26 +104,25 @@ public class Boss {
         Rectangle2D[] frames = (animations != null) ? animations.get(animKey) : null;
 
         if (spriteSheet != null && frames != null && animationFrame < frames.length) {
-            // --- (A) วาด Sprite ---
+
             Rectangle2D frame = frames[animationFrame];
             double sX = frame.getMinX(), sY = frame.getMinY();
             double sW = frame.getWidth(), sH = frame.getHeight();
 
             gc.drawImage(spriteSheet, sX, sY, sW, sH, x, y, width, height);
 
+            if (!currentState.equals("DEATH")) {
+                gc.setFill(Color.WHITE);
+                gc.fillRect(x, y - 20, width, 10);
+                gc.setFill(Color.RED);
+                gc.fillRect(x, y - 20, width * (health / 100.0), 10);
+            }
+
+
         } else {
-            gc.setFill(Color.web("#A9A9A9"));
-            gc.fillRect(x, y + 20, width, height - 20);
-            gc.setFill(Color.web("#696969"));
-            gc.fillRect(x + 40, y, 20, 40);
+
         }
 
-        if (!currentState.equals("DEATH")) {
-            gc.setFill(Color.WHITE);
-            gc.fillRect(x, y - 20, width, 10);
-            gc.setFill(Color.RED);
-            gc.fillRect(x, y - 20, width * (health / 100.0), 10);
-        }
     }
 
     public void hit() {
@@ -136,6 +135,12 @@ public class Boss {
             currentState = "DEATH";
             animationFrame = 0;
             animationTick = 0;
+
+            Rectangle2D[] deathFrames = (animations != null) ? animations.get("DEATH") : null;
+
+            if (deathFrames == null || deathFrames.length == 0) {
+                isReadyToRemove = true;
+            }
         }
     }
 

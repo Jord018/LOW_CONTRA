@@ -97,8 +97,8 @@ public class GameModel {
         }
 
         // Initialize all stages
-//        initializeStage1();
-//        initializeStage2();
+        initializeStage1();
+        initializeStage2();
         initializeStage3();
 
         if (!levels.isEmpty()) {
@@ -129,12 +129,11 @@ public class GameModel {
         List<Boss> bosses = new ArrayList<>();
         bosses.add(new Boss(440, 300,40,40, player, new ProjectileShoot(bossBulletSheet, bossBulletFrame),true,1));
         bosses.add(new Boss(520, 300, 40,40,player, new ProjectileShoot(bossBulletSheet, bossBulletFrame),true,1));
-        bosses.add(new Boss(460, 400, 100,100,player, new DirectShoot(bossBulletSheet, bossBulletFrame),false,1));
+        bosses.add(new Boss(460, 400, 100,100,player, new DirectShoot(bossBulletSheet, bossBulletFrame),false,2));
 
         List<Enemy> enemies = new ArrayList<>();
         enemies.add(new Enemy(300,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame,1));
         enemies.add(new Enemy(500,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame,1));
-
 
         levels.add(new Level(bosses, enemies, platforms, powerUps, "/GameAssets/MapBossWall.png", 3150, 10, 350, 210, height - 50,10, 10));
     }
@@ -166,17 +165,16 @@ public class GameModel {
 
         String boss3SpritePath = "/GameAssets/Boss333.png";
 
-        bosses.add(new ThirdBoss(350, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame), 2, boss3SpritePath));
-        bosses.add(new ThirdBoss(650, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame), 2, boss3SpritePath));
-        bosses.add(new ThirdBoss(50, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame), 2, boss3SpritePath));
+        bosses.add(new ThirdBoss(350, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame), boss3SpritePath, 2));
+        bosses.add(new ThirdBoss(650, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame), boss3SpritePath, 2));
+        bosses.add(new ThirdBoss(50, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame), boss3SpritePath, 2));
+
 
         List<Enemy> enemies = new ArrayList<>();
-        enemies.add(new Enemy(300,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame,1));
-        enemies.add(new Enemy(400,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame,1));
-        enemies.add(new Enemy(500,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame,1));
-        enemies.add(new Enemy(600,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame,1));
-        enemies.add(new Enemy(700,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame,1));
-        enemies.add(new Enemy(800,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame,1));
+        enemies.add(new Enemy(300,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame,2));
+        enemies.add(new Enemy(400,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame,2));
+        enemies.add(new Enemy(500,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame,2));
+        enemies.add(new Enemy(600,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame,2));
 
 
         levels.add(new Level(bosses, enemies, platforms, powerUps, "/GameAssets/MapBossJava.png", 2400, 10, 350, 210, height - 100,300, 300));
