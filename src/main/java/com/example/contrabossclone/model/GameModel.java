@@ -97,8 +97,8 @@ public class GameModel {
         }
 
         // Initialize all stages
-        initializeStage1();
-        initializeStage2();
+//        initializeStage1();
+//        initializeStage2();
         initializeStage3();
 
         if (!levels.isEmpty()) {
@@ -164,9 +164,11 @@ public class GameModel {
 
         List<Boss> bosses = new ArrayList<>();
 
-        bosses.add(new ThirdBoss(350, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame),2));
-        bosses.add(new ThirdBoss(650, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame),2));
-        bosses.add(new ThirdBoss(50, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame),2));
+        String boss3SpritePath = "/GameAssets/Boss333.png";
+
+        bosses.add(new ThirdBoss(350, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame), 2, boss3SpritePath));
+        bosses.add(new ThirdBoss(650, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame), 2, boss3SpritePath));
+        bosses.add(new ThirdBoss(50, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame), 2, boss3SpritePath));
 
         List<Enemy> enemies = new ArrayList<>();
         enemies.add(new Enemy(300,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame,1));
@@ -179,7 +181,6 @@ public class GameModel {
 
         levels.add(new Level(bosses, enemies, platforms, powerUps, "/GameAssets/MapBossJava.png", 2400, 10, 350, 210, height - 100,300, 300));
     }
-
 
     public void update() {
         Level currentLevel = levels.get(currentLevelIndex);

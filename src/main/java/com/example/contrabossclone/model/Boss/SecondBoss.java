@@ -34,8 +34,6 @@ public class SecondBoss extends Boss {
 
     public SecondBoss(double x, double y, double width, double height, Player player, ShootingStrategy shootingStrategy, String spriteSheetPath,int score) {
         super(x, y, width, height, player, shootingStrategy,score);
-        setMuzzleOffset(width * 0, height * 0.3);
-        // โหลด Sprite Sheet
         try {
             this.spriteSheet = new Image(getClass().getResourceAsStream(spriteSheetPath));
         } catch (Exception e) {
