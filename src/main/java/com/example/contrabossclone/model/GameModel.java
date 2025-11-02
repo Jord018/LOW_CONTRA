@@ -120,11 +120,11 @@ public class GameModel {
         List<PowerUp> powerUps = new ArrayList<>();
         double itemWidth = 74.4, itemHeight = 48;
 
-        powerUps.add(new PowerUp(100, 300, PowerUp.PowerUpType.MACHINE_GUN, powerUpSpriteSheet, powerUpFrames.get(PowerUp.PowerUpType.MACHINE_GUN), itemWidth, itemHeight));
-        powerUps.add(new PowerUp(200, 300, PowerUp.PowerUpType.BARRIER, powerUpSpriteSheet, powerUpFrames.get(PowerUp.PowerUpType.BARRIER), itemWidth, itemHeight));
-        powerUps.add(new PowerUp(300, 300, PowerUp.PowerUpType.SPREAD_GUN, powerUpSpriteSheet, powerUpFrames.get(PowerUp.PowerUpType.SPREAD_GUN), itemWidth, itemHeight));
-        powerUps.add(new PowerUp(400, 300, PowerUp.PowerUpType.LASER, powerUpSpriteSheet, powerUpFrames.get(PowerUp.PowerUpType.LASER), itemWidth, itemHeight));
-        powerUps.add(new PowerUp(500, 300, PowerUp.PowerUpType.FIRE, powerUpSpriteSheet, powerUpFrames.get(PowerUp.PowerUpType.FIRE), itemWidth, itemHeight));
+        powerUps.add(new PowerUp(50, 100, PowerUp.PowerUpType.MACHINE_GUN, powerUpSpriteSheet, powerUpFrames.get(PowerUp.PowerUpType.MACHINE_GUN), itemWidth, itemHeight));
+        powerUps.add(new PowerUp(150, 300, PowerUp.PowerUpType.BARRIER, powerUpSpriteSheet, powerUpFrames.get(PowerUp.PowerUpType.BARRIER), itemWidth, itemHeight));
+        powerUps.add(new PowerUp(350, 100, PowerUp.PowerUpType.SPREAD_GUN, powerUpSpriteSheet, powerUpFrames.get(PowerUp.PowerUpType.SPREAD_GUN), itemWidth, itemHeight));
+//        powerUps.add(new PowerUp(400, 300, PowerUp.PowerUpType.LASER, powerUpSpriteSheet, powerUpFrames.get(PowerUp.PowerUpType.LASER), itemWidth, itemHeight));
+        powerUps.add(new PowerUp(300, 500, PowerUp.PowerUpType.FIRE, powerUpSpriteSheet, powerUpFrames.get(PowerUp.PowerUpType.FIRE), itemWidth, itemHeight));
 
         List<Boss> bosses = new ArrayList<>();
         bosses.add(new Boss(440, 300,40,40, player, new ProjectileShoot(bossBulletSheet, bossBulletFrame),true,1));
@@ -133,6 +133,8 @@ public class GameModel {
 
         List<Enemy> enemies = new ArrayList<>();
         enemies.add(new Enemy(300,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame,1));
+        enemies.add(new Enemy(500,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame,1));
+
 
         levels.add(new Level(bosses, enemies, platforms, powerUps, "/GameAssets/MapBossWall.png", 3150, 10, 350, 210, height - 50,10, 10));
     }
@@ -144,10 +146,10 @@ public class GameModel {
         List<PowerUp> powerUps = new ArrayList<>();
 
         List<Boss> bosses = new ArrayList<>();
-        bosses.add(new SecondBoss(330, 0, 270, 270, player, new JAVA(bossJavaBulletSheet, bossJavaBulletFrames), "/GameAssets/BossJava.png",20));
+        bosses.add(new SecondBoss(330, 0, 270, 270, player, new JAVA(bossJavaBulletSheet, bossJavaBulletFrames), "/GameAssets/BossJava.png",2));
 
         List<Enemy> enemies = new ArrayList<>();
-        enemies.add(new Enemy(0,0,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame,3));
+        enemies.add(new Enemy(150,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame,1));
 
         platforms.add(new Platform(0, 400, 90, 500, true));
         platforms.add(new Platform(290, 200, 90, 800, true));
@@ -162,9 +164,9 @@ public class GameModel {
 
         List<Boss> bosses = new ArrayList<>();
 
-        bosses.add(new ThirdBoss(350, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame),10));
-        bosses.add(new ThirdBoss(650, 15, 100, 100 ,player, new ProjectileShoot(bossBulletSheet, bossBulletFrame),10));
-        bosses.add(new ThirdBoss(50, 15, 100, 100 ,player, new ProjectileShoot(bossBulletSheet, bossBulletFrame),10));
+        bosses.add(new ThirdBoss(350, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame),2));
+        bosses.add(new ThirdBoss(650, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame),2));
+        bosses.add(new ThirdBoss(50, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame),2));
 
         List<Enemy> enemies = new ArrayList<>();
 
@@ -228,14 +230,13 @@ public class GameModel {
 
         boolean enemiesCleared = currentLevel.getEnemies().isEmpty();
 
-        // ✅ เพิ่มระบบให้คะแนนเมื่อ enemy ถูกยิงตาย
         List<Enemy> enemiesToRemove = new ArrayList<>();
         for (Bullet bullet : playerBullets) {
             for (Enemy enemy : currentLevel.getEnemies()) {
                 if (enemy.isAlive() && !bullet.isExploding() && bullet.getBounds().intersects(enemy.getBounds())) {
                     enemy.die();
                     bullet.explode();
-                    player.setScore(player.getScore() + enemy.getScore());  // ✅ เพิ่มคะแนนเมื่อศัตรูตาย
+                    player.setScore(player.getScore() + enemy.getScore());
                     enemiesToRemove.add(enemy);
                     break;
                 }
@@ -319,8 +320,10 @@ public class GameModel {
                 if (currentLevelIndex < levels.size() - 1) {
                     currentLevelIndex++;
                     currentStage = currentLevelIndex + 1;
-                    player.setX(width / 2 - 25);
-                    player.setY(height - 50);
+
+                    Level newLevel = levels.get(currentLevelIndex);
+                    player.setX(newLevel.getStartX());
+                    player.setY(newLevel.getStartY());
                 } else {
                     gameOver = true;
                     gameOverMessage = "You Win! All Stages Completed! Score: " + player.getScore();

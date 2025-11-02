@@ -21,6 +21,6 @@ public class ThirdBoss extends Boss{
     @Override
     public void render(GraphicsContext gc) {
         gc.setFill(Color.web("#A9A9A9"));
-        gc.fillRect(x, y + 20, getWidth(), getHeight() - 20);
+        gc.fillRect(x , y + 20, getWidth(), getHeight() - 20);
     }
 }

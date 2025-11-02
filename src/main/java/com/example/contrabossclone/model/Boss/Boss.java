@@ -49,7 +49,7 @@ public class Boss {
 
     public List<Bullet> shoot(double screenWidth, double screenHeight) {
         if (!allowShoot || shootCooldown > 0) return new ArrayList<>();
-        shootCooldown = 60;
+        shootCooldown = 180;
 
         double spawnX = getX() + muzzleOffsetX;
         double spawnY = getY() + muzzleOffsetY;

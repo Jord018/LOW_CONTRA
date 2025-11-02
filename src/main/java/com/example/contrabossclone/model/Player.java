@@ -581,7 +581,7 @@ public class Player {
     public void activateBarrier() {
         logger.info("Barrier activated - Player is now invincible for {} seconds", invincibilityTimer / 60.0);
         isInvincible = true;
-        invincibilityTimer = 999999999; // 5 seconds of invincibility (60 frames per second)
+        invincibilityTimer = 300; // 5 seconds of invincibility (60 frames per second)
     }
 
     public Rectangle2D getBounds() {
