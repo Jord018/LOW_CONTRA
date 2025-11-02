@@ -636,5 +636,7 @@ public class Player {
     public void setScore(int i) {
         this.score = score;
     }
+
+    public void setLives(int i) {this.lives = lives;}
 }
 

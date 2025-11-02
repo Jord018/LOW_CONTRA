@@ -35,6 +35,7 @@ public class GameModel {
     private transient Image bossJavaBulletSheet;
     private Rectangle2D bossBulletFrame;
     private Rectangle2D bossJavaBulletFrame;
+    private Rectangle2D[] bossJavaBulletFrames;
 
     private transient Image powerUpSpriteSheet;
     private Map<PowerUp.PowerUpType, Rectangle2D> powerUpFrames;
@@ -60,7 +61,12 @@ public class GameModel {
 
         try {
             this.bossJavaBulletSheet = new Image(getClass().getResourceAsStream("/GameAssets/BossJavaBullet.png"));
-            this.bossJavaBulletFrame = new Rectangle2D(0, 0, 93.75, 93.75); // (sX, sY, sW, sH)
+            this.bossJavaBulletFrames = new Rectangle2D[] {
+                    new Rectangle2D(0, 0, 93.75, 117),
+                    new Rectangle2D(93.75, 0, 93.75, 117),
+                    new Rectangle2D(187.5, 0, 93.75, 117),
+                    new Rectangle2D(281.25, 0, 93.75, 117)
+            };
         } catch (Exception e) {
             System.err.println("!!! Error loading boss bullet sprite!");
             this.bossJavaBulletSheet = null;
@@ -103,7 +109,6 @@ public class GameModel {
             player.setX(startLevel.getStartX());
             player.setY(startLevel.getStartY());
         }
-
     }
 
     /**
@@ -125,14 +130,9 @@ public class GameModel {
         powerUps.add(new PowerUp(500, 300, PowerUp.PowerUpType.FIRE, powerUpSpriteSheet, powerUpFrames.get(PowerUp.PowerUpType.FIRE), itemWidth, itemHeight));
 
         List<Boss> bosses = new ArrayList<>();
-        // ⭐️ (3) ส่ง Sprite ที่โหลดไว้ เข้าไปใน Constructor
         bosses.add(new Boss(440, 300,40,40, player, new ProjectileShoot(bossBulletSheet, bossBulletFrame),true));
         bosses.add(new Boss(520, 300, 40,40,player, new ProjectileShoot(bossBulletSheet, bossBulletFrame),true));
-        // ⭐️ (แก้ไข) ลบ 'false' ที่เกินมา และส่ง Sprite เข้าไป
         bosses.add(new Boss(460, 330, 100,200,player, new DirectShoot(bossBulletSheet, bossBulletFrame),false));
-        bosses.add(new Boss(440, 300,40,40, player, new ProjectileShoot(bossBulletSheet, bossBulletFrame)));
-        bosses.add(new Boss(520, 300, 40,40,player, new ProjectileShoot(bossBulletSheet, bossBulletFrame)));
-        bosses.add(new Boss(460, 330, 100,200,player, new DirectShoot(bossBulletSheet, bossBulletFrame)));
 
         List<Enemy> enemies = new ArrayList<>();
         enemies.add(new Enemy(300,300,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame));
@@ -150,7 +150,7 @@ public class GameModel {
         List<PowerUp> powerUps = new ArrayList<>();
 
         List<Boss> bosses = new ArrayList<>();
-        bosses.add(new SecondBoss(330, 0, 270, 270, player, new JAVA(bossJavaBulletSheet, bossJavaBulletFrame), "/GameAssets/BossJava.png"));
+        bosses.add(new SecondBoss(330, 0, 270, 270, player, new JAVA(bossJavaBulletSheet, bossJavaBulletFrames), "/GameAssets/BossJava.png"));
 
         List<Enemy> enemies = new ArrayList<>();
         enemies.add(new Enemy(0,0,player,"/GameAssets/Enemy2.png", bossBulletSheet, bossBulletFrame));

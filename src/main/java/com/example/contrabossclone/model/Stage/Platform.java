@@ -10,7 +10,6 @@ public class Platform {
     private double x, y;
     private double width, height;
 
-
     private boolean isSolid;
 
 

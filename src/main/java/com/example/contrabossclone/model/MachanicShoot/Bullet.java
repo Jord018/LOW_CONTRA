@@ -147,8 +147,17 @@ public class Bullet {
     public Color getColor() {
         return color;
     }
+
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public double getHeight() {
+        return height;
     }
     // Setters
     public void setX(double x) {
