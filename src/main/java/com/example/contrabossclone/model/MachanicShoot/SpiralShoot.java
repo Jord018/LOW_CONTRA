@@ -14,11 +14,7 @@ public class SpiralShoot implements ShootingStrategy {
 
     private long lastShotTime = 0;
     private double spiralAngle = 0; // มุมหมุนรอบแกน
-
     private final long cooldown = 5000; // 5 วินาที
-    private final int numBullets = 12;  // กระสุนต่อชั้น
-    private final int numLayers = 3;    // จำนวนชั้นซ้อน
-    private final double layerRadiusStep = 15; // รัศมีแต่ละชั้น
 
     public SpiralShoot(Image spriteSheet, Rectangle2D spriteFrame) {
         this.spriteSheet = spriteSheet;
@@ -34,11 +30,21 @@ public class SpiralShoot implements ShootingStrategy {
         private final long startTime;
         private final long delay;
 
-
         public SpiralBullet(double x, double y, double bulletSpeed, double radius, double phase,
-                            long delay, double screenWidth, double screenHeight, Color color,
+                            long delay, double screenWidth, double screenHeight,
+                            Image spriteSheet, Rectangle2D spriteFrame,
                             double width, double height) {
-            super(x, y, 0, 0, color, width, height, screenWidth, screenHeight);
+            // ใช้ velocityX, velocityY = 0 เพราะเราจะ update เอง
+            super(x, y, 0, 0,
+                    spriteSheet != null ? spriteSheet : null,
+                    spriteFrame != null ? spriteFrame : null,
+                    width, height,
+                    screenWidth, screenHeight);
+            // ถ้า spriteSheet == null, ใช้สี fallback
+            if (spriteSheet == null) {
+                setColor(Color.ORANGE);
+            }
+
             this.radius = radius;
             this.speed = bulletSpeed;
             this.phase = phase;
@@ -47,23 +53,21 @@ public class SpiralShoot implements ShootingStrategy {
             this.delay = delay;
         }
 
+
         @Override
         public void update() {
             long tElapsed = System.currentTimeMillis() - startTime;
-            if(tElapsed < delay) return; // รอ delay ก่อน
+            if (tElapsed < delay) return;
 
             // Y ไหลลงตรง ๆ
             setY(getY() + speed);
 
-            // X สั่นเล็กน้อยตาม cosine
-            double xOffset = Math.cos(phase + spiralAngle * 0.005) * radius * 5; // amplitude ปรับขนาดสั่น
+            // X สั่นซ้ายขวา
+            double xOffset = Math.cos(phase + spiralAngle * 0.005) * radius * 5; // ปรับ amplitude ได้
             setX(startX + xOffset);
         }
-
-
-
-
     }
+
     @Override
     public List<Bullet> shoot(double x, double y, Player player,
                               double screenWidth, double screenHeight, double bulletSpeed) {
@@ -88,7 +92,9 @@ public class SpiralShoot implements ShootingStrategy {
                 long delay = i * 50;
 
                 bullets.add(new SpiralBullet(x, y, bulletSpeed, radius, phase,
-                        delay, screenWidth, screenHeight, Color.ORANGE, 10, 10));
+                        delay, screenWidth, screenHeight,
+                        this.spriteSheet, this.spriteFrame,
+                        10, 10));
             }
         }
 
@@ -97,4 +103,3 @@ public class SpiralShoot implements ShootingStrategy {
     }
 
 }
-

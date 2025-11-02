@@ -8,6 +8,14 @@ import javafx.scene.paint.Color;
 
 public class Bullet {
 
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
     private double x, y;
     private double width = 5, height = 10;
     private double velocityX, velocityY;
@@ -131,20 +139,17 @@ public class Bullet {
     public boolean isOutOfBounds(double width, double height) {
         return x < 0 || x > width || y < 0 || y > height;
     }
-
     public Rectangle2D getBounds() {
         return new Rectangle2D(x, y, width, height);
     }
 
     // Getters
-    public double getX() {
-        return x;
+    public Color getColor() {
+        return color;
     }
-
-    public double getY() {
-        return y;
+    public void setColor(Color color) {
+        this.color = color;
     }
-
     // Setters
     public void setX(double x) {
         this.x = x;
@@ -153,19 +158,19 @@ public class Bullet {
     public void setY(double y) {
         this.y = y;
     }
-    
+
     public double getVelocityX() {
         return velocityX;
     }
-    
+
     public void setVelocityX(double velocityX) {
         this.velocityX = velocityX;
     }
-    
+
     public double getVelocityY() {
         return velocityY;
     }
-    
+
     public void setVelocityY(double velocityY) {
         this.velocityY = velocityY;
     }
