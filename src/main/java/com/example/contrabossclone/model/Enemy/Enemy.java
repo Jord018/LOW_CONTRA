@@ -24,11 +24,16 @@ public class Enemy extends Player {
     private int animationSpeed = 10;
     private String currentState = "IDLE";
     private double lastX;
-    private double groundLevel; //
+    private double groundLevel;
     private transient Image bulletSpriteSheet;
     private Rectangle2D bulletFrame;
 
-    public Enemy(double x, double y, Player target, String spriteSheetPath, Image bulletSheet, Rectangle2D bulletFrame) {
+    // ✅ เพิ่ม field สำหรับคะแนน
+    private int score;
+
+    // ✅ Constructor ใหม่ (เพิ่ม parameter score)
+    public Enemy(double x, double y, Player target, String spriteSheetPath,
+                 Image bulletSheet, Rectangle2D bulletFrame, int score) {
         super(x, y);
         this.target = target;
         this.setWidth(70);
@@ -38,6 +43,7 @@ public class Enemy extends Player {
         this.groundLevel = y + 50;
         this.bulletSpriteSheet = bulletSheet;
         this.bulletFrame = bulletFrame;
+        this.score = score; // ✅ กำหนดคะแนน
 
         try {
             this.spriteSheet = new Image(getClass().getResourceAsStream(spriteSheetPath));
@@ -51,11 +57,11 @@ public class Enemy extends Player {
     private void initializeAnimations() {
         this.animations = new HashMap<>();
         animations.put("IDLE", new Rectangle2D[]{
-                new Rectangle2D(0, 0, 160, 160) // Frame 1
+                new Rectangle2D(0, 0, 160, 160)
         });
         animations.put("RUN", new Rectangle2D[]{
-                new Rectangle2D(160, 0, 160, 160), // Frame 1
-                new Rectangle2D(320, 0, 160, 160),  // Frame 2
+                new Rectangle2D(160, 0, 160, 160),
+                new Rectangle2D(320, 0, 160, 160),
                 new Rectangle2D(0, 0, 160, 160)
         });
     }
@@ -126,13 +132,10 @@ public class Enemy extends Player {
 
     private boolean canSeeTarget() {
         if (target == null) return false;
-        // Simple line of sight check
         return Math.abs(getY() - target.getY()) < 50;
     }
 
-
     @Override
-
     public List<Bullet> shoot(double screenWidth, double screenHeight) {
         List<Bullet> newBullets = new ArrayList<>();
         if (target == null || shootCooldown > 0 || !canSeeTarget())
@@ -157,7 +160,7 @@ public class Enemy extends Player {
         if (target == null) return;
 
         double distance = Math.hypot(target.getX() - getX(), target.getY() - getY());
-        if (distance > 50) { // Keep some distance
+        if (distance > 50) {
             double dx = target.getX() - getX();
             double dy = target.getY() - getY();
             double angle = Math.atan2(dy, dx);
@@ -167,7 +170,6 @@ public class Enemy extends Player {
             }
         }
     }
-
 
     public void die() {
         this.alive = false;
@@ -187,4 +189,12 @@ public class Enemy extends Player {
         return getY() + getHeight() >= this.groundLevel + 5;
     }
 
+    // ✅ Getter / Setter สำหรับ score
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
 }

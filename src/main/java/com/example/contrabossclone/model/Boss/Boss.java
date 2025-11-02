@@ -10,7 +10,6 @@ import javafx.scene.paint.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class Boss {
 
     protected double x, y;
@@ -22,11 +21,16 @@ public class Boss {
     private Player player;
     private ShootingStrategy shootingStrategy;
 
-    public Boss(double x, double y, double width, double height, Player player, ShootingStrategy shootingStrategy) {
-        this(x, y, width, height, player, shootingStrategy, true);
+    // ✅ เพิ่ม parameter score
+    private int score;
+
+    public Boss(double x, double y, double width, double height, Player player,
+                ShootingStrategy shootingStrategy, int score) {
+        this(x, y, width, height, player, shootingStrategy, true, score);
     }
-    
-    public Boss(double x, double y, double width, double height, Player player, ShootingStrategy shootingStrategy, boolean allowShoot) {
+
+    public Boss(double x, double y, double width, double height, Player player,
+                ShootingStrategy shootingStrategy, boolean allowShoot, int score) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -34,6 +38,7 @@ public class Boss {
         this.player = player;
         this.shootingStrategy = shootingStrategy;
         this.allowShoot = allowShoot;
+        this.score = score;
     }
 
     public void update() {
@@ -53,8 +58,6 @@ public class Boss {
     }
 
     public void render(GraphicsContext gc) {
-
-
         double baseHeight = height * 0.8;
         double baseOffsetY = height * 0.2;
 
@@ -65,13 +68,9 @@ public class Boss {
         double healthBarHeight = 10;
         double healthBarOffsetY = 20;
 
-        // --- วาด ---
-
         // Base
         gc.setFill(Color.web("#A9A9A9"));
         gc.fillRect(x, y + baseOffsetY, width, baseHeight);
-
-
 
         // Health bar
         gc.setFill(Color.WHITE);
@@ -93,6 +92,10 @@ public class Boss {
 
     public boolean isDefeated() {
         return health <= 0;
+    }
+
+    public boolean isAlive() {
+        return health > 0;
     }
 
     public double getWidth() {
@@ -122,10 +125,11 @@ public class Boss {
     public void setY(double y) {
         this.y = y;
     }
-    
+
     public boolean isAllowShoot() {
         return allowShoot;
     }
+
     protected double muzzleOffsetX = 0;
     protected double muzzleOffsetY = 0;
 
@@ -137,5 +141,14 @@ public class Boss {
     
     public void setAllowShoot(boolean allowShoot) {
         this.allowShoot = allowShoot;
+    }
+
+    // ✅ Getter/Setter สำหรับ score
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 }

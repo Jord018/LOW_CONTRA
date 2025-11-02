@@ -63,7 +63,7 @@ public class SpiralShoot implements ShootingStrategy {
             setY(getY() + speed);
 
             // X สั่นซ้ายขวา
-            double xOffset = Math.cos(phase + spiralAngle * 0.005) * radius * 5; // ปรับ amplitude ได้
+            double xOffset = Math.cos(phase + spiralAngle * 0.005) * radius * 2; // ปรับ amplitude ได้
             setX(startX + xOffset);
         }
     }

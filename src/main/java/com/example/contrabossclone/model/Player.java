@@ -7,6 +7,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.impl.Log4jLogEvent;
 
 import javafx.scene.image.Image;
 import java.util.HashMap;
@@ -23,6 +24,10 @@ public class Player {
         SPREAD_GUN,
         LASER,
         FIRE
+    }
+
+    public WeaponType getWeaponType() {
+        return weaponType;
     }
 
     private WeaponType weaponType = WeaponType.NORMAL;
@@ -50,8 +55,26 @@ public class Player {
 
     private double speed = 2;
     private double dx = 0;
+
+    public double getVelocityY() {
+        return velocityY;
+    }
+
+    public void setVelocityY(double velocityY) {
+        this.velocityY = velocityY;
+    }
+
     private double velocityY = 0;
     private double gravity = 0.15;
+
+    public boolean isOnGround() {
+        return onGround;
+    }
+
+    public void setOnGround(boolean onGround) {
+        this.onGround = onGround;
+    }
+
     private boolean onGround = false;
     private boolean isPressingDown = false;
     private double aimAngle = 90.0;
@@ -71,11 +94,24 @@ public class Player {
 
     private int maxHealth = 100;
     private static final Logger logger = LogManager.getLogger(Player.class);
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
     private int score = 0;
     private int health = maxHealth;
+
+
+
     private int lives = 3;
     private int fireRate = 30;
     private int fireCooldown = 0;
+
+    public void setInvincible(boolean invincible) {
+        isInvincible = invincible;
+    }
+
     private boolean isInvincible = false;
     private int invincibilityTimer = 0;
     private double respawnX, respawnY;
@@ -253,6 +289,13 @@ public class Player {
         this.respawnY = y;
         logger.info("Action: Set Respawn Position | RespawnX: {} | RespawnY: {}", x, y);
     }
+    private boolean isAngleNear(double angle, double target) {
+        angle = (angle + 360) % 360;
+        target = (target + 360) % 360;
+        double diff = Math.abs(angle - target);
+        return diff <= 5 || diff >= 355; // รองรับ 0°/360°
+    }
+
 
     public void update(List<Platform> platforms, double screenHeight) {
         x += dx;
@@ -318,6 +361,7 @@ public class Player {
 
         //Animation state logic
         String newState = "STAND";
+
         if (isPressingDown) {
             if (dx > 0) {
                 newState = "RUN_AIM_DOWN";
@@ -338,7 +382,7 @@ public class Player {
             } else {
                 newState = "RUN";
             }
-        } else { // กำลังยืน
+        } else {
             if (aimAngle == 90) {
                 newState = "AIM_UP";
             } else if (aimAngle == 45 || aimAngle == 135) {
@@ -617,13 +661,7 @@ public class Player {
         return onSolidPlatform;
     }
 
-    public boolean isOnGround() {
-        return onGround;
-    }
 
-    public void setOnGround(boolean onGround) {
-        this.onGround = onGround;
-    }
 
     public double getAimAngle() {
         return aimAngle;
@@ -633,9 +671,7 @@ public class Player {
         return score;
     }
 
-    public void setScore(int i) {
-        this.score = score;
-    }
+
 
     public void setLives(int i) {this.lives = lives;}
 }
