@@ -52,7 +52,7 @@ public class GameModel {
         this.width = width;
         this.height = height;
         player = new Player(width / 2 - 25, height - 50);
-        // ✅ โหลด Boss Bullet
+        // Boss Bullet
         bossBulletSheet = ResourceLoader.loadImage("/GameAssets/BossWallBullet.png");
         if (bossBulletSheet != null) {
             bossBulletFrame = new Rectangle2D(0, 0, 124, 126);
@@ -61,7 +61,7 @@ public class GameModel {
             logger.error("Failed to load BossWallBullet.png");
         }
 
-        // ✅ โหลด Boss Java Bullet
+        // Boss Java Bullet
         bossJavaBulletSheet = ResourceLoader.loadImage("/GameAssets/BossJavaBullet.png");
         if (bossJavaBulletSheet != null) {
             bossJavaBulletFrames = new Rectangle2D[]{
@@ -75,7 +75,7 @@ public class GameModel {
             logger.error("Failed to load BossJavaBullet.png");
         }
 
-        // ✅ โหลด PowerUp
+        // PowerUp
         powerUpFrames = new HashMap<>();
         powerUpSpriteSheet = ResourceLoader.loadImage("/GameAssets/SpecialGun.png");
         if (powerUpSpriteSheet != null) {
@@ -89,7 +89,7 @@ public class GameModel {
             logger.error("Failed to load SpecialGun.png");
         }
 
-        // ✅ โหลด Explosion sprite
+        // Explosion sprite
         Image explosionSheet = ResourceLoader.loadImage("/GameAssets/BulletExplode.png");
         if (explosionSheet != null) {
             Rectangle2D[] frames = new Rectangle2D[]{
@@ -148,6 +148,9 @@ public class GameModel {
         List<Platform> platforms = new ArrayList<>();
 
         List<PowerUp> powerUps = new ArrayList<>();
+        double itemWidth = 74.4, itemHeight = 48;
+        powerUps.add(new PowerUp(100, 300, PowerUp.PowerUpType.BARRIER, powerUpSpriteSheet, powerUpFrames.get(PowerUp.PowerUpType.BARRIER), itemWidth, itemHeight));
+
 
         List<Boss> bosses = new ArrayList<>();
         bosses.add(new SecondBoss(330, 0, 270, 270, player, new JAVA(bossJavaBulletSheet, bossJavaBulletFrames), "/GameAssets/BossJava.png",2));
@@ -170,9 +173,9 @@ public class GameModel {
 
         String boss3SpritePath = "/GameAssets/Boss333.png";
 
-        bosses.add(new ThirdBoss(350, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame), boss3SpritePath, 0));
-        bosses.add(new ThirdBoss(650, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame), boss3SpritePath, 0));
-        bosses.add(new ThirdBoss(50, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame), boss3SpritePath, 0));
+        bosses.add(new ThirdBoss(350, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame), boss3SpritePath, 2));
+        bosses.add(new ThirdBoss(650, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame), boss3SpritePath, 2));
+        bosses.add(new ThirdBoss(50, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame), boss3SpritePath, 2));
 
 
         List<Enemy> enemies = new ArrayList<>();
