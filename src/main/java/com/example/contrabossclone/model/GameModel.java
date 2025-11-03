@@ -10,6 +10,9 @@ import com.example.contrabossclone.model.Stage.Level;
 import com.example.contrabossclone.model.Stage.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +44,7 @@ public class GameModel {
     private double width;
     private double height;
 
+    private static final Logger logger = LogManager.getLogger(GameModel.class);
 
     public GameModel(double width, double height) {
         this.width = width;
@@ -165,9 +169,9 @@ public class GameModel {
 
         String boss3SpritePath = "/GameAssets/Boss333.png";
 
-        bosses.add(new ThirdBoss(350, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame), boss3SpritePath, 2));
-        bosses.add(new ThirdBoss(650, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame), boss3SpritePath, 2));
-        bosses.add(new ThirdBoss(50, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame), boss3SpritePath, 2));
+        bosses.add(new ThirdBoss(350, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame), boss3SpritePath, 0));
+        bosses.add(new ThirdBoss(650, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame), boss3SpritePath, 0));
+        bosses.add(new ThirdBoss(50, 15, 100, 100 ,player, new SpiralShoot(bossBulletSheet, bossBulletFrame), boss3SpritePath, 0));
 
 
         List<Enemy> enemies = new ArrayList<>();
@@ -243,6 +247,7 @@ public class GameModel {
                     enemy.die();
                     bullet.explode();
                     player.setScore(player.getScore() + enemy.getScore());
+                    logger.info("[SCORE] +{} (Enemy defeated) | Total: {}", enemy.getScore(), player.getScore());
                     enemiesToRemove.add(enemy);
                     break;
                 }
@@ -276,6 +281,7 @@ public class GameModel {
                         // ให้คะแนนทันทีตอน HP หมด (ก่อนโดนลบ)
                         if (wasAlive && boss.isDefeated()) {
                             player.setScore(player.getScore() + boss.getScore());
+                            logger.info("[SCORE] +{} (Boss defeated) | Total: {}", boss.getScore(), player.getScore());
                         }
                     }
 
@@ -333,13 +339,15 @@ public class GameModel {
                 } else {
                     gameOver = true;
                     gameOverMessage = "You Win! All Stages Completed! Score: " + player.getScore();
+                    logger.info("[GAME] Total Score: {}", player.getScore());
                 }
             }
 
-            if (player.getLives() <= 0) {
-                gameOver = true;
-                gameOverMessage = "Game Over";
-            }
+
+        }
+        if (player.getLives() <= 0) {
+            gameOver = true;
+            gameOverMessage = "Game Over";
         }
         currentLevel.getBosses().removeIf(Boss::isDefeated);
     }

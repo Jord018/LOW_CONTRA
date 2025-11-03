@@ -92,10 +92,23 @@ public class Player {
     private transient Image bulletSpriteSheet;
     private Rectangle2D bulletFrame; // Frame สำหรับกระสุนปกติ
 
-    private int maxHealth = 100;
+    public int getMaxHealth() {
+        return maxHealth;
+    }
+
+    private int maxHealth = 1;
     private static final Logger logger = LogManager.getLogger(Player.class);
 
     private int score = 0;
+
+    public int getHealth() {
+        return health;
+    }
+
+    public void setHealth(int health) {
+        this.health = health;
+    }
+
     private int health = maxHealth;
 
 
@@ -454,19 +467,8 @@ public class Player {
             gc.drawImage(spriteSheet, sX, sY, sW, sH, dX + sW, dY, -sW, sH);
         }
 
-        gc.setFill(Color.WHITE);
-        gc.fillRect(hitbox.getMinX(), hitbox.getMinY() - 10, hitbox.getWidth(), 5);
-        gc.setFill(Color.GREEN);
-        gc.fillRect(hitbox.getMinX(), hitbox.getMinY() - 10, hitbox.getWidth() * (health / 100.0), 5);
 
-        if (isInvincible) {
-            gc.setStroke(Color.CYAN);
-            gc.setLineWidth(2);
-            gc.strokeRect(hitbox.getMinX(), hitbox.getMinY(), hitbox.getWidth(), hitbox.getHeight());
-        }
-        gc.setStroke(Color.RED);
-        gc.setLineWidth(2);
-        gc.strokeRect(hitbox.getMinX(), hitbox.getMinY(), hitbox.getWidth(), hitbox.getHeight());
+
     }
 
     private void renderFallback(GraphicsContext gc) {
@@ -671,6 +673,6 @@ public class Player {
         this.score = newScore;
     }
 
-    public void setLives(int i) {this.lives = lives;}
+    public void setLives(int lives) {this.lives = lives;}
 }
 
