@@ -29,10 +29,8 @@ public class Enemy extends Player {
     private transient Image bulletSpriteSheet;
     private Rectangle2D bulletFrame;
 
-    // ✅ เพิ่ม field สำหรับคะแนน
     private int score;
 
-    // ✅ Constructor ใหม่ (เพิ่ม parameter score)
     public Enemy(double x, double y, Player target, String spriteSheetPath,
                  Image bulletSheet, Rectangle2D bulletFrame, int score) {
         super(x, y);
@@ -44,7 +42,7 @@ public class Enemy extends Player {
         this.groundLevel = y + 50;
         this.bulletSpriteSheet = bulletSheet;
         this.bulletFrame = bulletFrame;
-        this.score = score; // ✅ กำหนดคะแนน
+        this.score = score;
 
         this.spriteSheet = ResourceLoader.loadImage(spriteSheetPath);
         initializeAnimations();
@@ -185,7 +183,6 @@ public class Enemy extends Player {
         return getY() + getHeight() >= this.groundLevel + 5;
     }
 
-    // ✅ Getter / Setter สำหรับ score
     public int getScore() {
         return score;
     }
