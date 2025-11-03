@@ -3,6 +3,7 @@ package com.example.contrabossclone.model.Enemy;
 import com.example.contrabossclone.model.Player;
 import com.example.contrabossclone.model.MachanicShoot.Bullet;
 import com.example.contrabossclone.model.Stage.Platform;
+import com.example.contrabossclone.util.ResourceLoader;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.geometry.Rectangle2D;
@@ -45,12 +46,7 @@ public class Enemy extends Player {
         this.bulletFrame = bulletFrame;
         this.score = score; // ✅ กำหนดคะแนน
 
-        try {
-            this.spriteSheet = new Image(getClass().getResourceAsStream(spriteSheetPath));
-        } catch (Exception e) {
-            System.err.println("Error loading enemy sprite: " + spriteSheetPath);
-            this.spriteSheet = null;
-        }
+        this.spriteSheet = ResourceLoader.loadImage(spriteSheetPath);
         initializeAnimations();
     }
 

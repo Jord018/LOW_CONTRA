@@ -7,7 +7,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.geometry.Rectangle2D;
-
+import com.example.contrabossclone.util.ResourceLoader;
 import java.util.List;
 
 public class Level {
@@ -35,12 +35,7 @@ public class Level {
         this.enemies = enemies;
         this.platforms = platforms;
         this.powerUps = powerUps;
-        try {
-            this.backgroundImage = new Image(getClass().getResourceAsStream(backgroundImagePath));
-        } catch (Exception e) {
-            System.out.println("Error loading background image: " + backgroundImagePath);
-            this.backgroundImage = null;
-        }
+        this.backgroundImage = ResourceLoader.loadImage(backgroundImagePath);
         this.groundLevel = groundLevel;
         this.startX = startX;
         this.startY = startY;

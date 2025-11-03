@@ -2,6 +2,7 @@ package com.example.contrabossclone.model;
 
 import com.example.contrabossclone.model.MachanicShoot.Bullet;
 import com.example.contrabossclone.model.Stage.Platform;
+import com.example.contrabossclone.util.ResourceLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -132,20 +133,9 @@ public class Player {
         this.respawnX = 10;
         this.respawnY = 10;
 
-        try {
-            this.spriteSheet = new Image(getClass().getResourceAsStream("/GameAssets/Character2.png"));
-        } catch (Exception e) {
-            System.err.println("!!! Error loading sprite sheet: /GameAssets/Character2.png");
-            this.spriteSheet = null;
-        }
-
-        try {
-            this.bulletSpriteSheet = new Image(getClass().getResourceAsStream("/GameAssets/PlayerBullet.png"));
-            this.bulletFrame = new Rectangle2D(0, 0, 25, 25); // (sX, sY, sW, sH)
-        } catch (Exception e) {
-            System.err.println("!!! Error loading bullet sprite sheet: /GameAssets/PlayerBullet.png");
-            this.bulletSpriteSheet = null;
-        }
+        this.spriteSheet = ResourceLoader.loadImage("/GameAssets/Character2.png");
+        this.bulletSpriteSheet = ResourceLoader.loadImage("/GameAssets/PlayerBullet.png");
+        this.bulletFrame = new Rectangle2D(0, 0, 25, 25); // (sX, sY, sW, sH)
 
         initializeAnimations();
     }

@@ -8,6 +8,7 @@ import com.example.contrabossclone.model.Items.PowerUp;
 import com.example.contrabossclone.model.MachanicShoot.*;
 import com.example.contrabossclone.model.Stage.Level;
 import com.example.contrabossclone.model.Stage.Platform;
+import com.example.contrabossclone.util.ResourceLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import org.apache.logging.log4j.LogManager;
@@ -50,54 +51,53 @@ public class GameModel {
         this.width = width;
         this.height = height;
         player = new Player(width / 2 - 25, height - 50);
-
-        try {
-            this.bossBulletSheet = new Image(getClass().getResourceAsStream("/GameAssets/BossWallBullet.png"));
-            this.bossBulletFrame = new Rectangle2D(0, 0, 124, 126); // (sX, sY, sW, sH)
-        } catch (Exception e) {
-            System.err.println("!!! Error loading boss bullet sprite!");
-            this.bossBulletSheet = null;
+        // ✅ โหลด Boss Bullet
+        bossBulletSheet = ResourceLoader.loadImage("/GameAssets/BossWallBullet.png");
+        if (bossBulletSheet != null) {
+            bossBulletFrame = new Rectangle2D(0, 0, 124, 126);
+            logger.info("Loaded BossWallBullet.png successfully.");
+        } else {
+            logger.error("Failed to load BossWallBullet.png");
         }
 
-        try {
-            this.bossJavaBulletSheet = new Image(getClass().getResourceAsStream("/GameAssets/BossJavaBullet.png"));
-            this.bossJavaBulletFrames = new Rectangle2D[] {
+        // ✅ โหลด Boss Java Bullet
+        bossJavaBulletSheet = ResourceLoader.loadImage("/GameAssets/BossJavaBullet.png");
+        if (bossJavaBulletSheet != null) {
+            bossJavaBulletFrames = new Rectangle2D[]{
                     new Rectangle2D(0, 0, 93.75, 117),
                     new Rectangle2D(93.75, 0, 93.75, 117),
                     new Rectangle2D(187.5, 0, 93.75, 117),
                     new Rectangle2D(281.25, 0, 93.75, 117)
             };
-        } catch (Exception e) {
-            System.err.println("!!! Error loading boss bullet sprite!");
-            this.bossJavaBulletSheet = null;
+            logger.info("Loaded BossJavaBullet.png successfully.");
+        } else {
+            logger.error("Failed to load BossJavaBullet.png");
         }
 
-        this.powerUpFrames = new HashMap<>();
-
-        try {
-            this.powerUpSpriteSheet = new Image(getClass().getResourceAsStream("/GameAssets/SpecialGun.png"));
+        // ✅ โหลด PowerUp
+        powerUpFrames = new HashMap<>();
+        powerUpSpriteSheet = ResourceLoader.loadImage("/GameAssets/SpecialGun.png");
+        if (powerUpSpriteSheet != null) {
             powerUpFrames.put(PowerUp.PowerUpType.MACHINE_GUN, new Rectangle2D(24.8, 0, 24.8, 16));
             powerUpFrames.put(PowerUp.PowerUpType.BARRIER, new Rectangle2D(49.6, 16, 24.8, 16));
             powerUpFrames.put(PowerUp.PowerUpType.SPREAD_GUN, new Rectangle2D(49.6, 0, 24.8, 16));
             powerUpFrames.put(PowerUp.PowerUpType.LASER, new Rectangle2D(99.2, 16, 24.8, 16));
             powerUpFrames.put(PowerUp.PowerUpType.FIRE, new Rectangle2D(0, 0, 24.8, 16));
-
-        } catch (Exception e) {
-            System.err.println("!!! Error loading PowerUp sprite sheet!");
-            this.powerUpSpriteSheet = null;
+            logger.info("Loaded SpecialGun.png successfully.");
+        } else {
+            logger.error("Failed to load SpecialGun.png");
         }
 
-        try {
-            Image explosionSheet = new Image(getClass().getResourceAsStream("/GameAssets/BulletExplode.png"));
-
-            Rectangle2D[] frames = new Rectangle2D[] {
+        // ✅ โหลด Explosion sprite
+        Image explosionSheet = ResourceLoader.loadImage("/GameAssets/BulletExplode.png");
+        if (explosionSheet != null) {
+            Rectangle2D[] frames = new Rectangle2D[]{
                     new Rectangle2D(0, 0, 279, 283)
             };
-
             Bullet.loadExplosionSprite(explosionSheet, frames);
-
-        } catch (Exception e) {
-            System.err.println("!!! Error loading Explosion sprite sheet!");
+            logger.info("Loaded BulletExplode.png successfully.");
+        } else {
+            logger.error("Failed to load BulletExplode.png");
         }
 
         // Initialize all stages

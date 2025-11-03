@@ -12,6 +12,7 @@ import javafx.scene.text.Font; // ⭐️ (2) เพิ่ม Import
 import javafx.stage.Stage;
 import com.example.contrabossclone.controller.GameController;
 import com.example.contrabossclone.model.GameModel;
+import com.example.contrabossclone.util.ResourceLoader;
 import com.example.contrabossclone.view.GameView;
 
 public class Main extends Application {
@@ -30,25 +31,18 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        // (กำหนดขนาดจอ)
+
         double screenWidth = 800;
         double screenHeight = 600;
 
-        // ⭐️ (4) โหลดฟอนต์ (จากโค้ด ContraApplication เดิม)
-        try {
-            Font.loadFont(getClass().getResourceAsStream("/GameAssets/PressStart2P-Regular.ttf"), 20);
-        } catch (Exception e) {
-            System.err.println("!!! ไม่พบฟอนต์ 'PressStart2P-Regular.ttf' ใน /GameAssets/");
-            System.err.println("กรุณาดาวน์โหลดและใส่ไว้ในโฟลเดอร์ resources/GameAssets");
-        }
 
-        // (สร้าง Root Pane)
+
         rootPane = new StackPane();
         Scene scene = new Scene(rootPane, screenWidth, screenHeight);
 
-        // ⭐️ --- (5) สร้าง "ส่วนของเกม" (จากโค้ด Main เดิมของคุณ) ---
+
         canvas = new Canvas(screenWidth, screenHeight);
-        gamePane = new StackPane(canvas); // (สร้าง Pane สำหรับเกม)
+        gamePane = new StackPane(canvas);
 
         model = new GameModel(canvas.getWidth(), canvas.getHeight());
         view = new GameView(model, canvas.getWidth(), canvas.getHeight());
@@ -69,7 +63,7 @@ public class Main extends Application {
 
         controller = new GameController(model, scene);
 
-        // ⭐️ (6) สร้าง Game Timer (แต่ "ยังไม่" .start())
+
         gameTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -80,17 +74,17 @@ public class Main extends Application {
                 view.render(canvas.getGraphicsContext2D(), canvas);
             }
         };
-        // ⭐️ (ลบ .start() จากตรงนี้)
 
-        // ⭐️ --- (7) สร้าง "ส่วนของเมนู" ---
+
+
         menuView = new MenuView(() -> {
-            // นี่คือคำสั่ง (Runnable) ที่จะทำงานเมื่อกด "PLAY"
-            rootPane.getChildren().remove(menuView); // ลบเมนู
-            rootPane.getChildren().add(gamePane);  // เพิ่มเกม
-            gameTimer.start(); // ⭐️ เริ่มเกมลูป!
+            //
+            rootPane.getChildren().remove(menuView); //
+            rootPane.getChildren().add(gamePane);  // เ
+            gameTimer.start(); //
         });
 
-        // ⭐️ --- (8) แสดงเมนูก่อน ---
+        // ⭐️ --- (8) ---
         rootPane.getChildren().add(menuView);
 
         primaryStage.setTitle("Contra Boss Clone");
