@@ -181,7 +181,7 @@ void testPlayerTakesDamage() {
     int initialLives = player.getLives();
 
     // Set health to 2 so the next hit will trigger a respawn
-    player.setLives(2);
+    player.setLives(3);
 
     // Hit the player to trigger respawn
     player.hit();
