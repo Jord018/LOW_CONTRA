@@ -11,13 +11,11 @@ import com.example.contrabossclone.model.Stage.Platform;
 import com.example.contrabossclone.util.ResourceLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GameModel {
 
@@ -44,6 +42,9 @@ public class GameModel {
 
     private double width;
     private double height;
+    private long lastRandomBulletTime = 0;
+    private final long randomBulletInterval = 2000; // มิลลิวินาที (2 วินาที)
+    private final Random random = new Random();
 
     private static final Logger logger = LogManager.getLogger(GameModel.class);
 
@@ -287,6 +288,10 @@ public class GameModel {
 
                 }
             }
+            if (currentStage == 3) {
+                spawnRandomBulletsForStage3();
+            }
+
         }
 
         playerBullets.removeAll(playerBulletsToRemove);
@@ -401,6 +406,33 @@ public class GameModel {
 
         this.width = newWidth;
         this.height = newHeight;
+    }
+
+    private void spawnRandomBulletsForStage3() {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastRandomBulletTime < randomBulletInterval) {
+            return; //
+        }
+        lastRandomBulletTime = currentTime;
+
+        int count = random.nextInt(5) + 1;
+
+        for (int i = 0; i < count; i++) {
+            double x = random.nextDouble() * width;
+            double y = 0; //
+            double speedY = 2 + random.nextDouble() * 4; //
+
+            Bullet randomBullet = new CircleBullet(
+                    x, y,
+                    0, speedY,
+                    Color.WHITE,
+                    15,
+                    width, height
+            );
+
+            bossBullets.add(randomBullet);
+            logger.info("[STAGE3] Spawned random bullet at ({}, {}) with speed {}", x, y, speedY);
+        }
     }
 
 

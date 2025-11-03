@@ -123,6 +123,11 @@ public class Player {
     }
 
     private boolean isInvincible = false;
+
+    public void setInvincibilityTimer(int invincibilityTimer) {
+        this.invincibilityTimer = invincibilityTimer;
+    }
+
     private int invincibilityTimer = 0;
     private double respawnX, respawnY;
 

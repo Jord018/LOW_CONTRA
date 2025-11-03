@@ -59,7 +59,7 @@ public class GameController {
     }
     private void activateContraCheat() {
         System.out.println("CONTRA CHEAT ACTIVATED!");
-        model.getPlayer().setInvincible(true); // ตัวอย่างเพิ่มชีวิต
+        model.getPlayer().setInvincible(true); //
 
     }
     public void handleInput() {
