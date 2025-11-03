@@ -120,6 +120,10 @@ public class Boss {
 
 
         } else {
+            gc.setFill(Color.WHITE);
+            gc.fillRect(x, y - 20, width, 10); // พื้นหลังหลอดเลือด
+            gc.setFill(Color.RED);
+            gc.fillRect(x, y - 20, width * (health / 100.0), 10); // ปริมาณเลือด
 
         }
 

@@ -441,6 +441,7 @@ public class GameModel {
 
     public Player getPlayer() { return player; }
 
+
     public List<Level> getLevels() { return levels; }
 
     public int getCurrentLevelIndex() { return currentLevelIndex; }

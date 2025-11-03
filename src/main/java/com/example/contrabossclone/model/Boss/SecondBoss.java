@@ -86,9 +86,9 @@ public class SecondBoss extends Boss {
 
 
         gc.setFill(Color.WHITE);
-        gc.fillRect(getX(), getY() - 20, getWidth(), 10);
+        gc.fillRect(getX(), 0, getWidth(), 10);
         gc.setFill(Color.RED);
-        gc.fillRect(getX(), getY() - 20, getWidth() * (getHealth() / 100.0), 10);
+        gc.fillRect(getX(), 0, getWidth() * (getHealth() / 100.0), 10);
     }
 
     // เมธอดสำรอง
