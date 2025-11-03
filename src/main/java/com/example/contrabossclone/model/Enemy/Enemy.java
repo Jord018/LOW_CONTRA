@@ -17,7 +17,7 @@ public class Enemy extends Player {
     private boolean alive = true;
     private Player target;
     private int shootCooldown = 0;
-    private static final int SHOOT_DELAY = 60;
+    private static final int SHOOT_DELAY = 120;
     private transient Image spriteSheet;
     private Map<String, Rectangle2D[]> animations;
     private int animationFrame = 0;
