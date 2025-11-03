@@ -32,8 +32,8 @@ public class ProjectileShoot implements ShootingStrategy {
         double velocityY = 0;
 
         ProjectileBullet projectile = new ProjectileBullet(x, y, velocityX, velocityY,
-                spriteSheet, spriteFrame, // ⭐️ ส่ง Sprite
-                12, 12, // ⭐️ ขนาดกระสุน
+                spriteSheet, spriteFrame,
+                12, 12,
                 screenWidth, screenHeight, gravity);
         bullets.add(projectile);
 
